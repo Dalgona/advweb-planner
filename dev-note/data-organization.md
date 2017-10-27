@@ -61,8 +61,8 @@ Represents a to-do list registered in a `planner`.
 | `planner_id`   | integer  | F &rarr; `planner` |
 | `created_at`   | datetime |                    |
 | `modified_at`  | datetime |                    |
-| `title`        | datetime |                    |
-| `complete`     | datetime |                    |
+| `title`        | string   |                    |
+| `complete`     | boolean  |                    |
 
 ### To-do List Item (`todo_item`)
 
@@ -74,8 +74,8 @@ Represents each item in a `todo_list`.
 | `todo_list_id` | integer  | F &rarr; `todo_list` |
 | `created_at`   | datetime |                      |
 | `modified_at`  | datetime |                      |
-| `title`        | datetime |                      |
-| `complete`     | datetime |                      |
+| `title`        | string   |                      |
+| `complete`     | boolean  |                      |
 
 ### Label (`label`)
 

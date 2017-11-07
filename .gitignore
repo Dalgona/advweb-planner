@@ -29,6 +29,9 @@ node_modules
 # Debug log from npm
 npm-debug.log
 
+# Swap files created by Vim
+*.swp
+
 # Private config file. This file shall never be included in the repository.
 /config/config.json
 

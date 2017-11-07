@@ -1,14 +1,15 @@
+var env = process.env.NODE_ENV || 'development';
+
 const fs = require('fs');
 const path = require('path');
-const config = require(path.join(__dirname, '..', 'config'));
+const config = require(path.join(__dirname, '..', 'config', 'config.json'))[env];
 const Sequelize = require('sequelize');
 
-const sequelize = new Sequelize(
-  config.db.dbname,
-  config.db.user,
-  config.db.password,
-  config.db.options
-);
+if (process.env.DATABASE_URL) {
+  var sequelize = new Sequelize(process.env.DATABASE_URL, config);
+} else {
+  var sequelize = new Sequelize(config.database, config.username, config.password, config);
+}
 
 var db = {};
 

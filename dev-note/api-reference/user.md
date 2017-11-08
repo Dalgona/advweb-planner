@@ -48,7 +48,7 @@ This API responds with a corresponding `user` object on success.
 
 ### Description
 
-Updates information of the current user identifyed by a token.
+Updates information of the current user identified by a token.
 
 This API **REQUIRES** a user token.
 
@@ -78,7 +78,16 @@ This API **REQUIRES** a user token.
 
 ### Parameters
 
-None.
+Content-type: `application/x-www-form-urlencoded`
+
+| Name     | Type   | Description                     | Required? |
+|----------|--------|---------------------------------|-----------|
+| email    | string | E-mail address for confirmation | Yes       |
+| auth     | string | Password for confirmation       | Yes       |
+
+**WARNING:** The application MUST NOT automatically send these arguments when
+calling this API. Instead, it must have the user manually put his/her account
+information before sending a request.
 
 ### Response
 

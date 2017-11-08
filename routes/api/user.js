@@ -65,11 +65,11 @@ router.put('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
   apiUser
   .update(req.user, req.body.fullName, req.body.auth)
   .then(u => {
-    res.status(200).type('application/json').send(apiUser.toJSON(u));
+    res.status(205).type('application/json').send(apiUser.toJSON(u));
   })
   .catch(e => {
     res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  })
+  });
 });
 
 /*
@@ -77,7 +77,28 @@ router.put('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
  * Permanently deletes the current user account identified by a token.
  */
 router.delete('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
-  res.send('delete current user');
+  // Check if the user supplied all required information.
+  const email = (req.body['email'] || '').trim();
+  const auth = req.body['auth'] || '';
+  let valid = !!(email && auth);
+
+  if (valid) {
+    apiUser
+    .delete(req.user, email, auth)
+    .then(() => {
+      res.status(205).type('application/json').send({
+        message: "account deleted"
+      });
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  } else {
+    res
+    .status(400)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_ARGMISSING));
+  }
 });
 
 /*
@@ -88,7 +109,7 @@ router.delete('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
 router.post('/authenticate', (req, res, next) => {
   // Check if the user supplied all required information.
   const email = (req.body['email'] || '').trim();
-  const auth = (req.body['auth'] || '').trim();
+  const auth = req.body['auth'] || '';
   let valid = !!(email && auth);
 
   if (valid) {

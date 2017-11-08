@@ -7,6 +7,9 @@ const config = require('../config/config.json')[env]
 const error = require('../api/error');
 const User = require('../models').User;
 
+const _hashed = text =>
+  crypto.createHash('sha256').update(text).digest('base64');
+
 /*
  * Inserts a new User instance into the database.
  */
@@ -25,7 +28,7 @@ const create = (fullName, email, auth) => new Promise((resolve, reject) => {
         modifiedAt: now,
         fullName: fullName,
         email: email,
-        auth: crypto.createHash('sha256').update(auth).digest('base64'),
+        auth: _hashed(auth),
         verified: false
       });
       user
@@ -76,15 +79,36 @@ const update = (token, fullName, auth) => new Promise((resolve, reject) => {
       u.fullName = newName;
     }
     if (newAuth) {
-      u.auth = crypto.createHash('sha256').update(newAuth).digest('base64');
+      u.auth = _hashed(newAuth);
     }
     if (newName || newAuth) {
       u.modifiedAt = new Date();
     }
     u.save().then(u2 => resolve(u2)).catch(e => {
       console.error(e);
-      reject(error.toJSON(error.code.E_DBERROR));
+      reject({ status: 500, code: error.code.E_DBERROR });
     });
+  })
+  .catch(e => reject(e));
+});
+
+/*
+ * Tries to delete the current user account.
+ */
+const delete_ = (token, email, auth) => new Promise((resolve, reject) => {
+  check(token)
+  .then(u => {
+    if (u.email === email && u.auth === _hashed(auth)) {
+      u
+      .destroy({ force: true })
+      .then(resolve)
+      .catch(e => {
+        console.error(e);
+        reject({ status: 500, code: error.code.E_DBERROR });
+      });
+    } else {
+      reject({ status: 403, code: error.code.E_ACCDELREFUSED });
+    }
   })
   .catch(e => reject(e));
 });
@@ -93,9 +117,8 @@ const update = (token, fullName, auth) => new Promise((resolve, reject) => {
  * Tries to authenticate user.
  */
 const authenticate = (email, auth) => new Promise((resolve, reject) => {
-  const hashedAuth = crypto.createHash('sha256').update(auth).digest('base64');
   User
-  .findAll({ where: { email: email, auth: hashedAuth } })
+  .findAll({ where: { email: email, auth: _hashed(auth) } })
   .then(result => {
     if (result.length == 0) {
       // Could not find a user with the given credential.
@@ -135,6 +158,7 @@ module.exports = {
   create: create,
   check: check,
   update: update,
+  delete: delete_,
   authenticate: authenticate,
   toJSON: toJSON
 };

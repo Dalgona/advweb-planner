@@ -19,25 +19,14 @@ const router = express.Router();
  * Gets information about the current user identified by a token.
  */
 router.get('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
-  const userId = req.user.userId;
-  const email = req.user.email;
-  let valid = !!(userId && email);
-
-  if (valid) {
-    apiUser
-    .check(userId, email)
-    .then(u => {
-      res.status(200).type('application/json').send(apiUser.toJSON(u));
-    })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    })
-  } else {
-    res
-    .status(401)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_NOAUTH));
-  }
+  apiUser
+  .check(req.user)
+  .then(u => {
+    res.status(200).type('application/json').send(apiUser.toJSON(u));
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 /*
@@ -48,7 +37,7 @@ router.post('/', (req, res, next) => {
   // Check if the user supplied all required information.
   const fullName = (req.body['fullName'] || '').trim();
   const email = (req.body['email'] || '').trim();
-  const auth = (req.body['auth'] || '').trim();
+  const auth = req.body['auth'] || '';
   let valid = !!(fullName && email && auth);
 
   if (valid) {
@@ -72,15 +61,22 @@ router.post('/', (req, res, next) => {
  * PUT /user
  * Updates information of the current user identified by a token.
  */
-router.put('/', (req, res, next) => {
-  res.send('update user information');
+router.put('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
+  apiUser
+  .update(req.user, req.body.fullName, req.body.auth)
+  .then(u => {
+    res.status(200).type('application/json').send(apiUser.toJSON(u));
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  })
 });
 
 /*
  * DELETE /user
  * Permanently deletes the current user account identified by a token.
  */
-router.delete('/', (req, res, next) => {
+router.delete('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
   res.send('delete current user');
 });
 

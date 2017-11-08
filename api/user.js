@@ -10,7 +10,7 @@ const User = require('../models').User;
 /*
  * Inserts a new User instance into the database.
  */
-exports.create = (fullName, email, auth) => new Promise((resolve, reject) => {
+const create = (fullName, email, auth) => new Promise((resolve, reject) => {
   User
   .findAll({ where: { email: email } })
   .then(result => {
@@ -46,7 +46,9 @@ exports.create = (fullName, email, auth) => new Promise((resolve, reject) => {
 /*
  * Checks if the provided token contains valid user information.
  */
-exports.check = (userId, email) => new Promise((resolve, reject) => {
+const check = (token) => new Promise((resolve, reject) => {
+  const userId = token.userId || '';
+  const email = token.email || '';
   User
   .findOne({ where: { id: userId, email: email } })
   .then(result => {
@@ -63,9 +65,34 @@ exports.check = (userId, email) => new Promise((resolve, reject) => {
 });
 
 /*
+ * Tries to update a user's information.
+ */
+const update = (token, fullName, auth) => new Promise((resolve, reject) => {
+  check(token)
+  .then(u => {
+    const newName = (fullName || '').trim();
+    const newAuth = auth || '';
+    if (newName) {
+      u.fullName = newName;
+    }
+    if (newAuth) {
+      u.auth = crypto.createHash('sha256').update(newAuth).digest('base64');
+    }
+    if (newName || newAuth) {
+      u.modifiedAt = new Date();
+    }
+    u.save().then(u2 => resolve(u2)).catch(e => {
+      console.error(e);
+      reject(error.toJSON(error.code.E_DBERROR));
+    });
+  })
+  .catch(e => reject(e));
+});
+
+/*
  * Tries to authenticate user.
  */
-exports.authenticate = (email, auth) => new Promise((resolve, reject) => {
+const authenticate = (email, auth) => new Promise((resolve, reject) => {
   const hashedAuth = crypto.createHash('sha256').update(auth).digest('base64');
   User
   .findAll({ where: { email: email, auth: hashedAuth } })
@@ -95,7 +122,7 @@ exports.authenticate = (email, auth) => new Promise((resolve, reject) => {
  * Given an instance of User, generates a JSON which can be sent
  * back to clients.
  */
-exports.toJSON = instance => JSON.stringify({
+const toJSON = instance => JSON.stringify({
   id: instance.id,
   createdAt: instance.createdAt,
   modifiedAt: instance.modifiedAt,
@@ -103,3 +130,11 @@ exports.toJSON = instance => JSON.stringify({
   fullName: instance.fullName,
   verified: instance.verified
 });
+
+module.exports = {
+  create: create,
+  check: check,
+  update: update,
+  authenticate: authenticate,
+  toJSON: toJSON
+};

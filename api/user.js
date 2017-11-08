@@ -145,7 +145,8 @@ const authenticate = (email, auth) => new Promise((resolve, reject) => {
  * Given an instance of User, generates a JSON which can be sent
  * back to clients.
  */
-const toJSON = instance => JSON.stringify({
+// TODO: convert to a Promise to maintain code consistency.
+const toJSON = instance => ({
   id: instance.id,
   createdAt: instance.createdAt,
   modifiedAt: instance.modifiedAt,

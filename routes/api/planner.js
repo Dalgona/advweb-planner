@@ -29,7 +29,31 @@ router.get('/', (req, res, next) => {
  * Creates a new planner belonging to the current user.
  */
 router.post('/', (req, res, next) => {
-  res.send('create a new planner');
+  const title = (req.body.title || '').trim();
+  const stripUser = req.query.stripUser === 'true';
+  if (title) {
+    apiPlanner
+    .create(req.user, title)
+    .then(p => {
+      apiPlanner
+      .toJSON(p, stripUser)
+      .then(o => res.status(201).type('application/json').send(o))
+      .catch(e => {
+        res
+        .status(e.status)
+        .type('application/json')
+        .send(error.toJSON(e.code));
+      });
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    })
+  } else {
+    res
+    .status(400)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_ARGMISSING));
+  }
 });
 
 /*

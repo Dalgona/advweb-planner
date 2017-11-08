@@ -86,7 +86,7 @@ Content-type: `application/x-www-form-urlencoded`
 
 | name  | type   | description              | required? |
 |-------|--------|--------------------------|-----------|
-| title | string | New title of the planner | yes       |
+| title | string | New title of the planner | no        |
 
 Content-Type: `(QUERY STRING)`
 

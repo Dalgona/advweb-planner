@@ -59,7 +59,7 @@ router.post('/', (req, res, next) => {
     })
     .catch(e => {
       res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    })
+    });
   } else {
     res
     .status(400)
@@ -74,22 +74,33 @@ router.post('/', (req, res, next) => {
  * The `id` parameter must be pointing at a planner owned by the current user.
  */
 router.get('/:id(\\d+)', (req, res, next) => {
-  res.send('get information of planner #' + req.params.id);
+  const stripUser = req.query.stripUser === 'true';
+  apiPlanner
+  .get(req.user, req.params.id)
+  .then(p => {
+    apiPlanner
+    .toJSON(p, stripUser)
+    .then(o => res.status(200).type('application/json').send(o))
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    })
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 /*
- * PUT /planner/:id(\\d+)
- * gets information about selected planner.
- * the `id` parameter must be pointing at a planner owned by the current user.
+ * PUT /planner/:id
+ * Modifies information or settings of selected planner.
  */
 router.put('/:id(\\d+)', (req, res, next) => {
   res.send('update information of planner #' + req.params.id);
 });
 
 /*
- * DELETE e/planner/:id(\\d+)
- * gets information about selected planner.
- * the `id` parameter must be pointing at a planner owned by the current user.
+ * DELETE e/planner/:id
+ * Permanently deletes selected planner and its contents.
  */
 router.delete('/:id(\\d+)', (req, res, next) => {
   res.send('delete planner #' + req.params.id);

@@ -19,6 +19,7 @@ const codes = {
   E_NOAUTH: 100,
   E_NOACCESS: 101,
   E_EMAILDUP: 102,
+  E_LOGINFAIL: 103,
   E_ARGMISSING: 800,
   E_DBERROR: 900,
 };
@@ -27,6 +28,7 @@ const messages = {};
 messages[codes.E_NOAUTH] = 'cannot authenticate you';
 messages[codes.E_NOACCESS] = 'you do not have permission to view this object';
 messages[codes.E_EMAILDUP] = 'email address is duplicate';
+messages[codes.E_LOGINFAIL] = 'incorrect email address or password';
 messages[codes.E_ARGMISSING] = 'required arguments are missing';
 messages[codes.E_DBERROR] = 'database error';
 

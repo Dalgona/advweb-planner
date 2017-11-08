@@ -3,18 +3,41 @@
  * This module exposes API endpoints related to manipulating user accounts.
  */
 
-var express = require('express');
-var router = express.Router();
+var env = process.env.NODE_ENV || 'development';
 
+const express = require('express');
+const ejwt = require('express-jwt');
+
+const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiUser = require('../../api/user');
+
+const router = express.Router();
 
 /*
  * GET /user
  * Gets information about the current user identified by a token.
  */
-router.get('/', (req, res, next) => {
-  res.send('get current user information');
+router.get('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
+  const userId = req.user.userId;
+  const email = req.user.email;
+  let valid = !!(userId && email);
+
+  if (valid) {
+    apiUser
+    .check(userId, email)
+    .then(u => {
+      res.status(200).type('application/json').send(apiUser.toJSON(u));
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    })
+  } else {
+    res
+    .status(401)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_NOAUTH));
+  }
 });
 
 /*
@@ -67,7 +90,26 @@ router.delete('/', (req, res, next) => {
  * and generates a JSON web token.
  */
 router.post('/authenticate', (req, res, next) => {
-  res.send('authenticate user');
+  // Check if the user supplied all required information.
+  const email = (req.body['email'] || '').trim();
+  const auth = (req.body['auth'] || '').trim();
+  let valid = !!(email && auth);
+
+  if (valid) {
+    apiUser
+    .authenticate(email, auth)
+    .then(token => {
+      res.status(200).type('application/json').send({ token: token });
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  } else {
+    res
+    .status(400)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_ARGMISSING));
+  }
 })
 
 module.exports = router;

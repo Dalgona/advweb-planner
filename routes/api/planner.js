@@ -21,7 +21,19 @@ router.use(ejwt({ secret: config.jwtSecret }));
  * Gets a list of planners the current user owns.
  */
 router.get('/', (req, res, next) => {
-  res.send('get a list of planners owned by ' + req.user.email);
+  const stripUser = req.query.stripUser === 'true';
+  apiPlanner
+  .getAll(req.user)
+  .then(result => {
+    Promise.all(result.map(p => apiPlanner.toJSON(p, stripUser)))
+    .then(x => res.status(200).type('application/json').send(x))
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    })
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  })
 });
 
 /*

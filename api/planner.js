@@ -23,6 +23,21 @@ const create = (token, title) => new Promise((resolve, reject) => {
   .catch(e => reject(e));
 });
 
+const getAll = (token) => new Promise((resolve, reject) => {
+  apiUser
+  .check(token)
+  .then(u => {
+    u
+    .getPlanners({ order: [ [ 'createdAt', 'ASC' ] ] })
+    .then(result => resolve(result))
+    .catch(e => {
+      console.error(e);
+      reject({ code: 500, code: error.code.E_DBERROR });
+    })
+  })
+  .catch(e => reject(e));
+});
+
 const toJSON = (instance, stripUser) => new Promise((resolve, reject) => {
   const ret = {
     id: instance.id,
@@ -49,5 +64,6 @@ const toJSON = (instance, stripUser) => new Promise((resolve, reject) => {
 
 module.exports = {
   create: create,
+  getAll: getAll,
   toJSON: toJSON
 };

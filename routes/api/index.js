@@ -13,7 +13,7 @@ var router = express.Router();
 router.use(bodyParser.urlencoded({ extended: true }));
 
 router.use('/user', require('./user'));
-// router.use('/planner', require('./planner'));
+router.use('/planner', require('./planner'));
 
 router.get('/', (req, res, next) => {
   res.send('welcome to api');

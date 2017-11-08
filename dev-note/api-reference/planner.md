@@ -2,6 +2,8 @@
 
 Base URL: `/api`
 
+Boolean values in a query string: `"true"` is truthy. anything else is falsey.
+
 ## GET `/planner`
 
 ### Description
@@ -12,7 +14,11 @@ This API **REQUIRES** a user token.
 
 ### Parameters
 
-None.
+Content-Type: `(QUERY STRING)`
+
+| name      | type    | description                              | required? |
+|-----------|---------|------------------------------------------|-----------|
+| stripUser | boolean | If set, `user` property will be omitted. | no        |
 
 ### Response
 
@@ -34,6 +40,12 @@ Content-type: `application/x-www-form-urlencoded`
 |-------|--------|--------------------------|-----------|
 | title | string | Title of the new planner | yes       |
 
+Content-Type: `(QUERY STRING)`
+
+| name      | type    | description                              | required? |
+|-----------|---------|------------------------------------------|-----------|
+| stripUser | boolean | If set, `user` property will be omitted. | no        |
+
 ### Response
 
 This API responds with a new `planner` object on success.
@@ -49,7 +61,11 @@ This API **REQUIRES** a user token.
 
 ### Parameters
 
-None.
+Content-Type: `(QUERY STRING)`
+
+| name      | type    | description                              | required? |
+|-----------|---------|------------------------------------------|-----------|
+| stripUser | boolean | If set, `user` property will be omitted. | no        |
 
 ### Response
 
@@ -72,6 +88,12 @@ Content-type: `application/x-www-form-urlencoded`
 |-------|--------|--------------------------|-----------|
 | title | string | New title of the planner | yes       |
 
+Content-Type: `(QUERY STRING)`
+
+| name      | type    | description                              | required? |
+|-----------|---------|------------------------------------------|-----------|
+| stripUser | boolean | If set, `user` property will be omitted. | no        |
+
 ### Response
 
 This API responds with a modified `planner` object on success.
@@ -87,7 +109,11 @@ This API **REQUIRES** a user token.
 
 ### Parameters
 
-None.
+Content-type: `application/x-www-form-urlencoded`
+
+| name  | type   | description                               | required? |
+|-------|--------|-------------------------------------------|-----------|
+| title | string | New title of the planner for confirmation | yes       |
 
 ### Response
 

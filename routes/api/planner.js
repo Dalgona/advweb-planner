@@ -83,7 +83,7 @@ router.get('/:id(\\d+)', (req, res, next) => {
     .then(o => res.status(200).type('application/json').send(o))
     .catch(e => {
       res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    })
+    });
   })
   .catch(e => {
     res.status(e.status).type('application/json').send(error.toJSON(e.code));
@@ -95,7 +95,21 @@ router.get('/:id(\\d+)', (req, res, next) => {
  * Modifies information or settings of selected planner.
  */
 router.put('/:id(\\d+)', (req, res, next) => {
-  res.send('update information of planner #' + req.params.id);
+  const stripUser = req.query.stripUser === 'true';
+  const title = (req.body.title || '').trim();
+  apiPlanner
+  .update(req.user, req.params.id, title)
+  .then(p => {
+    apiPlanner
+    .toJSON(p, stripUser)
+    .then(o => res.status(205).type('application/json').send(o))
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 /*

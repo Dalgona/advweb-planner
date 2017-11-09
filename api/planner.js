@@ -27,7 +27,7 @@ const create = (token, title) => new Promise((resolve, reject) => {
 });
 
 /*
- * Get a list of all planners owned by the current user.
+ * Gets a list of all planners owned by the current user.
  */
 const getAll = (token) => new Promise((resolve, reject) => {
   apiUser
@@ -45,7 +45,7 @@ const getAll = (token) => new Promise((resolve, reject) => {
 });
 
 /*
- * Get information of single planner specified by id.
+ * Gets information of single planner specified by id.
  */
 const get = (token, plannerId) => new Promise((resolve, reject) => {
   Planner
@@ -62,6 +62,24 @@ const get = (token, plannerId) => new Promise((resolve, reject) => {
     }
   })
   .catch(e => reject({ status: 500, code: error.code.E_DBERROR }));
+});
+
+/*
+ * Modifies information of specified planner.
+ */
+const update = (token, plannerId, title) => new Promise((resolve, reject) => {
+  get(token, plannerId)
+  .then(p => {
+    if (title) {
+      p.title = title;
+      p.modifiedAt = new Date();
+    }
+    p.save().then(p2 => resolve(p2)).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(e => reject(e));
 });
 
 const toJSON = (instance, stripUser) => new Promise((resolve, reject) => {
@@ -92,5 +110,6 @@ module.exports = {
   create: create,
   getAll: getAll,
   get: get,
+  update: update,
   toJSON: toJSON
 };

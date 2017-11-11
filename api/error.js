@@ -22,6 +22,7 @@ const codes = {
   E_LOGINFAIL: 103,
   E_ACCDELREFUSED: 104,
   E_NOPLANNER: 200,
+  E_PLADELREFUSED: 201,
   E_ARGMISSING: 800,
   E_DBERROR: 900,
 };
@@ -32,6 +33,7 @@ messages[codes.E_NOACCESS] = 'you are not allowed to access this object';
 messages[codes.E_EMAILDUP] = 'email address is duplicate';
 messages[codes.E_LOGINFAIL] = 'incorrect email address or password';
 messages[codes.E_ACCDELREFUSED] = 'you need more courage to delete an account';
+messages[codes.E_PLADELREFUSED] = 'are you really sure to delete this planner?';
 messages[codes.E_NOPLANNER] = 'the planner you are looking for does not exist';
 messages[codes.E_ARGMISSING] = 'required arguments are missing';
 messages[codes.E_DBERROR] = 'database error';

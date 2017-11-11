@@ -82,6 +82,28 @@ const update = (token, plannerId, title) => new Promise((resolve, reject) => {
   .catch(e => reject(e));
 });
 
+/*
+ * Permanently deletes specified planner and its contents.
+ */
+
+const delete_ = (token, plannerId, title) => new Promise((resolve, reject) => {
+  get(token, plannerId)
+  .then(p => {
+    if (p.title === title) {
+      p
+      .destroy({ force: true })
+      .then(resolve)
+      .catch(e => {
+        console.error(e);
+        reject({ status: 500, code: error.code.E_DBERROR });
+      });
+    } else {
+      reject({ status: 403, code: error.code.E_PLADELREFUSED });
+    }
+  })
+  .catch(e => reject(e));
+});
+
 const toJSON = (instance, stripUser) => new Promise((resolve, reject) => {
   const ret = {
     id: instance.id,
@@ -111,5 +133,6 @@ module.exports = {
   getAll: getAll,
   get: get,
   update: update,
+  delete: delete_,
   toJSON: toJSON
 };

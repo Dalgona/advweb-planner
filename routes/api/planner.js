@@ -113,11 +113,21 @@ router.put('/:id(\\d+)', (req, res, next) => {
 });
 
 /*
- * DELETE e/planner/:id
+ * DELETE /planner/:id
  * Permanently deletes selected planner and its contents.
  */
 router.delete('/:id(\\d+)', (req, res, next) => {
-  res.send('delete planner #' + req.params.id);
+  const title = req.body.title || '';
+  apiPlanner
+  .delete(req.user, req.params.id, title)
+  .then(() => {
+    res.status(205).type('application/json').send({
+      message: 'planner deleted'
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 module.exports = router;

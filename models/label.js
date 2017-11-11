@@ -3,6 +3,8 @@ module.exports = function (sequelize, DataTypes) {
     id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     createdAt: { type: DataTypes.DATE(6), allowNull: false },
     modifiedAt: { type: DataTypes.DATE(6), allowNull: false },
+    title: { type: DataTypes.STRING, allowNull: false },
+    color: { type: DataTypes.STRING(10), allowNull: false }
   });
 
   Label.associate = models => {

@@ -28,7 +28,38 @@ const create = (token, listId, title) => new Promise((resolve, reject) => {
 /*
  * Gets information of specified to-do list item.
  */
-//const get
+const get = (token, itemId) => new Promise((resolve, reject) => {
+  TodoItem
+  .findOne({ where: { id: itemId } })
+  .then(item => {
+    if (item) {
+      item
+      .getTodoList()
+      .then(list => {
+        apiTodoList
+        .getOwner(list)
+        .then(uid => {
+          if (uid == token.userId) {
+            resolve(item);
+          } else {
+            reject({ status: 403, code: error.code.E_NOACCESS });
+          }
+        })
+        .catch(reject);
+      })
+      .catch(e => {
+        console.error(e);
+        reject({ status: 500, code: error.code.E_DBERROR });
+      });
+    } else {
+      reject({ status: 404, code: error.code.E_NOENT });
+    }
+  })
+  .catch(e => {
+    console.log(e);
+    reject({ status: 500, code: error.code.E_DBERROR });
+  });
+});
 
 /*
  * Modifies information of specified to-do list item.
@@ -50,7 +81,7 @@ const toJSON = instance => ({
 
 module.exports = {
   create: create,
-  //get: get,
+  get: get,
   //update: update,
   //delete: delete_,
   toJSON: toJSON

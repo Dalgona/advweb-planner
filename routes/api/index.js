@@ -15,6 +15,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.use('/user', require('./user'));
 router.use('/planner', require('./planner'));
 router.use('/todo-list', require('./todo-list'));
+router.use('/todo-item', require('./todo-item'));
 router.use('/label', require('./label'));
 
 router.use((req, res, next) => {

@@ -44,6 +44,19 @@ const create = (token, plannerId, title) => new Promise((resolve, reject) => {
 });
 
 /*
+ * Finds id of the user who owns this to-do list.
+ */
+const getOwner = instance => new Promise((resolve, reject) => {
+  instance
+  .getPlanner()
+  .then(p => resolve(p.UserId))
+  .catch(e => {
+    console.error(e);
+    reject({ status: 500, code: error.code.E_DBERROR });
+  });
+});
+
+/*
  * Gets information of selected to-do list.
  */
 const get = (token, listId) => new Promise((resolve, reject) => {
@@ -51,19 +64,15 @@ const get = (token, listId) => new Promise((resolve, reject) => {
   .findOne({ where: { id: listId } })
   .then(list => {
     if (list) {
-      list
-      .getPlanner()
-      .then(p => {
-        if (p.UserId == token.userId) {
+      getOwner(list)
+      .then(uid => {
+        if (uid == token.userId) {
           resolve(list);
         } else {
           reject({ status: 403, code: error.code.E_NOACCESS });
         }
       })
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      .catch(reject);
     } else {
       reject({ status: 404, code: error.code.E_NOENT });
     }
@@ -145,6 +154,7 @@ module.exports = {
   getAll: getAll,
   create: create,
   get: get,
+  getOwner: getOwner,
   update: update,
   delete: delete_,
   toJSON: toJSON

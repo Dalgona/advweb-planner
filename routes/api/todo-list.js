@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiTodoList = require('../../api/todo-list');
+const apiTodoItem = require('../../api/todo-item');
 
 const router = express.Router();
 
@@ -76,6 +77,33 @@ router.delete('/:id(\\d+)', (req, res, next) => {
   .catch(e => {
     res.status(e.status).type('application/json').send(error.toJSON(e.code));
   });
+});
+
+/*****************************/
+/* TO-DO LIST ITEM RESOURCES */
+/*****************************/
+
+/*
+ * POST /todo-list/:id/item
+ * Appends a new item to the specified to-do list.
+ */
+router.post('/:id(\\d+)/item', (req, res, next) => {
+  const title = (req.body.title || '').trim();
+  if (title) {
+    apiTodoItem
+    .create(req.user, req.params.id, title)
+    .then(item => {
+      res.status(201).type('application/json').send(apiTodoItem.toJSON(item));
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  } else {
+    res
+    .status(400)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_ARGMISSING));
+  }
 });
 
 module.exports = router;

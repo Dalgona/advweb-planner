@@ -1,13 +1,43 @@
 const error = require('../api/error');
-const TodoList = require('../models').TodoList;
-const apiPlanner = require('./planner');
+const TodoItem = require('../models').TodoItem;
+const apiTodoList = require('./todo-list');
 
-//const create
+/*
+ * Creates a new to-do list item
+ */
+const create = (token, listId, title) => new Promise((resolve, reject) => {
+  apiTodoList
+  .get(token, listId)
+  .then(list => {
+    const now = new Date();
+    list.createTodoItem({
+      createdAt: now,
+      modifiedAt: now,
+      title: title,
+      complete: false
+    })
+    .then(resolve)
+    .catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
+/*
+ * Gets information of specified to-do list item.
+ */
 //const get
 
+/*
+ * Modifies information of specified to-do list item.
+ */
 //const update
 
+/*
+ * Permanently deletes specified to-do list item.
+ */
 //const delete_
 
 const toJSON = instance => ({
@@ -19,7 +49,7 @@ const toJSON = instance => ({
 });
 
 module.exports = {
-  //create: create,
+  create: create,
   //get: get,
   //update: update,
   //delete: delete_,

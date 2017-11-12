@@ -21,10 +21,11 @@ const codes = {
   E_EMAILDUP: 102,
   E_LOGINFAIL: 103,
   E_ACCDELREFUSED: 104,
-  E_NOPLANNER: 200,
   E_PLADELREFUSED: 201,
   E_ARGMISSING: 800,
+  E_BADARG: 801,
   E_DBERROR: 900,
+  E_NOENT: 901,
 };
 
 const messages = {};
@@ -34,9 +35,10 @@ messages[codes.E_EMAILDUP] = 'email address is duplicate';
 messages[codes.E_LOGINFAIL] = 'incorrect email address or password';
 messages[codes.E_ACCDELREFUSED] = 'you need more courage to delete an account';
 messages[codes.E_PLADELREFUSED] = 'are you really sure to delete this planner?';
-messages[codes.E_NOPLANNER] = 'the planner you are looking for does not exist';
 messages[codes.E_ARGMISSING] = 'required arguments are missing';
+messages[codes.E_BADARG] = 'ill-formed argument';
 messages[codes.E_DBERROR] = 'database error';
+messages[codes.E_NOENT] = 'the object you are looking for does not exist';
 
 exports.code = codes;
 exports.messages = messages;

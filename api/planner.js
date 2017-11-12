@@ -1,5 +1,3 @@
-var env = process.env.NODE_ENV || 'development';
-
 const error = require('../api/error');
 const Planner = require('../models').Planner;
 const apiUser = require('./user');
@@ -17,13 +15,13 @@ const create = (token, title) => new Promise((resolve, reject) => {
       modifiedAt: now,
       title: title
     })
-    .then(newPlanner => resolve(newPlanner))
+    .then(resolve)
     .catch(e => {
       console.error(e);
       reject({ status: 500, code: error.code.E_DBERROR});
     })
   })
-  .catch(e => reject(e));
+  .catch(reject);
 });
 
 /*
@@ -41,7 +39,7 @@ const getAll = (token) => new Promise((resolve, reject) => {
       reject({ code: 500, code: error.code.E_DBERROR });
     })
   })
-  .catch(e => reject(e));
+  .catch(reject);
 });
 
 /*
@@ -58,10 +56,13 @@ const get = (token, plannerId) => new Promise((resolve, reject) => {
         reject({ status: 403, code: error.code.E_NOACCESS });
       }
     } else {
-      reject({ status: 404, code: error.code.E_NOPLANNER });
+      reject({ status: 404, code: error.code.E_NOENT });
     }
   })
-  .catch(e => reject({ status: 500, code: error.code.E_DBERROR }));
+  .catch(e => {
+    console.error(e);
+    reject({ status: 500, code: error.code.E_DBERROR })
+  });
 });
 
 /*
@@ -79,7 +80,7 @@ const update = (token, plannerId, title) => new Promise((resolve, reject) => {
       reject({ status: 500, code: error.code.E_DBERROR });
     });
   })
-  .catch(e => reject(e));
+  .catch(reject);
 });
 
 /*
@@ -101,7 +102,7 @@ const delete_ = (token, plannerId, title) => new Promise((resolve, reject) => {
       reject({ status: 403, code: error.code.E_PLADELREFUSED });
     }
   })
-  .catch(e => reject(e));
+  .catch(reject);
 });
 
 const toJSON = (instance, stripUser) => new Promise((resolve, reject) => {

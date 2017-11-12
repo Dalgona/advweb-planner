@@ -89,7 +89,7 @@ const update = (token, fullName, auth) => new Promise((resolve, reject) => {
       reject({ status: 500, code: error.code.E_DBERROR });
     });
   })
-  .catch(e => reject(e));
+  .catch(reject);
 });
 
 /*
@@ -110,7 +110,7 @@ const delete_ = (token, email, auth) => new Promise((resolve, reject) => {
       reject({ status: 403, code: error.code.E_ACCDELREFUSED });
     }
   })
-  .catch(e => reject(e));
+  .catch(reject);
 });
 
 /*

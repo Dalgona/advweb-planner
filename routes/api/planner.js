@@ -163,9 +163,35 @@ router.get('/:id(\\d+)/todo-list', (req, res, next) => {
 
 /*
  * POST /planner/:id/todo-list
- * Addes a new to-do list to the selected planner.
+ * Adds a new to-do list to the selected planner.
  */
 router.post('/:id(\\d+)/todo-list', (req, res, next) => {
+  const title = (req.body.title || '').trim();
+  const stripPlanner = req.query.stripPlanner === 'true';
+  const stripUser = req.query.stripUser === 'true';
+  if (title) {
+    apiTodoList
+    .create(req.user, req.params.id, title)
+    .then(l => {
+      apiTodoList
+      .toJSON(l, { stripPlanner: stripPlanner, stripUser: stripUser })
+      .then(o => res.status(201).type('application/json').send(o))
+      .catch(e => {
+        res
+        .status(e.status)
+        .type('application/json')
+        .send(error.toJSON(e.code));
+      });
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  } else {
+    res
+    .status(400)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_ARGMISSING));
+  }
 });
 
 module.exports = router;

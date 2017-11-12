@@ -26,6 +26,7 @@ const codes = {
   E_BADARG: 801,
   E_DBERROR: 900,
   E_NOENT: 901,
+  E_NOIMPL: 999
 };
 
 const messages = {};
@@ -39,6 +40,7 @@ messages[codes.E_ARGMISSING] = 'required arguments are missing';
 messages[codes.E_BADARG] = 'ill-formed argument';
 messages[codes.E_DBERROR] = 'database error';
 messages[codes.E_NOENT] = 'the object you are looking for does not exist';
+messages[codes.E_NOIMPL] = 'this function is not implemented yet';
 
 exports.code = codes;
 exports.messages = messages;

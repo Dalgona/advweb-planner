@@ -3,6 +3,9 @@ const TodoList = require('../models').TodoList;
 const apiPlanner = require('./planner');
 const apiTodoItem = require('./todo-item');
 
+/*
+ * Gets a list of all to-do lists saved in the specified planner.
+ */
 const getAll = (token, plannerId) => new Promise((resolve, reject) => {
   apiPlanner
   .get(token, plannerId)
@@ -18,12 +21,41 @@ const getAll = (token, plannerId) => new Promise((resolve, reject) => {
   .catch(reject);
 });
 
-//const create
+/*
+ * Adds a new to-do list to the specified planner.
+ */
+const create = (token, plannerId, title) => new Promise((resolve, reject) => {
+  apiPlanner
+  .get(token, plannerId)
+  .then(p => {
+    const now = new Date();
+    p.createTodoList({
+      createdAt: now,
+      modifiedAt: now,
+      title: title
+    })
+    .then(resolve)
+    .catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
+/*
+ * Gets information of selected to-do list.
+ */
 //const get
 
+/*
+ * Modifies information of selected to-do list.
+ */
 //const update
 
+/*
+ * Permanently deletes information of selected to-do list.
+ */
 //const delete_
 
 const toJSON = (instance, options) => new Promise((resolve, reject) => {
@@ -63,7 +95,7 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
 
 module.exports = {
   getAll: getAll,
-  //create: create,
+  create: create,
   //get: get,
   //update: update,
   //delete: delete_,

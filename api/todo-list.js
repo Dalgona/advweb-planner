@@ -82,7 +82,16 @@ const get = (token, listId) => new Promise((resolve, reject) => {
 /*
  * Permanently deletes information of selected to-do list.
  */
-//const delete_
+const delete_ = (token, listId) => new Promise((resolve, reject) => {
+  get(token, listId)
+  .then(list => {
+    list.destroy().then(resolve).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
 const toJSON = (instance, options) => new Promise((resolve, reject) => {
   const ret = {
@@ -124,6 +133,6 @@ module.exports = {
   create: create,
   get: get,
   //update: update,
-  //delete: delete_,
+  delete: delete_,
   toJSON: toJSON
 };

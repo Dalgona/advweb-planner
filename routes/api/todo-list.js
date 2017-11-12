@@ -52,6 +52,16 @@ router.put('/:id(\\d+)', (req, res, next) => {
  * Permanently deletes specified to-do list and its items.
  */
 router.delete('/:id(\\d+)', (req, res, next) => {
+  apiTodoList
+  .delete(req.user, req.params.id)
+  .then(() => {
+    res.status(205).type('application/json').send({
+      message: 'to-do list deleted'
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 module.exports = router;

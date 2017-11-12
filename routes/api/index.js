@@ -14,11 +14,15 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 router.use('/user', require('./user'));
 router.use('/planner', require('./planner'));
+router.use('/todo-list', require('./todo-list'));
 router.use('/label', require('./label'));
 
-router.get('/', (req, res, next) => {
-  res.send('welcome to api');
-});
+router.use((req, res, next) => {
+  res
+  .status(404)
+  .type('application/json')
+  .send(error.toJSON(error.code.E_NOENT));
+})
 
 // Custom error handler
 router.use((err, req, res, next) => {

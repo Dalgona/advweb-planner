@@ -46,7 +46,33 @@ const create = (token, plannerId, title) => new Promise((resolve, reject) => {
 /*
  * Gets information of selected to-do list.
  */
-//const get
+const get = (token, listId) => new Promise((resolve, reject) => {
+  TodoList
+  .findOne({ where: { id: listId } })
+  .then(list => {
+    if (list) {
+      list
+      .getPlanner()
+      .then(p => {
+        if (p.UserId == token.userId) {
+          resolve(list);
+        } else {
+          reject({ status: 403, code: error.code.E_NOACCESS });
+        }
+      })
+      .catch(e => {
+        console.error(e);
+        reject({ status: 500, code: error.code.E_DBERROR });
+      });
+    } else {
+      reject({ status: 404, code: error.code.E_NOENT });
+    }
+  })
+  .catch(e => {
+    console.error(e);
+    reject({ status: 500, code: error.code.E_DBERROR });
+  });
+});
 
 /*
  * Modifies information of selected to-do list.
@@ -96,7 +122,7 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
 module.exports = {
   getAll: getAll,
   create: create,
-  //get: get,
+  get: get,
   //update: update,
   //delete: delete_,
   toJSON: toJSON

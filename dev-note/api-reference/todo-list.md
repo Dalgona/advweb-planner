@@ -30,7 +30,7 @@ This API responds with a list of `todo_list` objects on success.
 
 ## Description
 
-Add a new to-do list to the selected planner.
+Adds a new to-do list to the selected planner.
 
 ## Parameters
 

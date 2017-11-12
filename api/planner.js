@@ -33,7 +33,7 @@ const getAll = (token) => new Promise((resolve, reject) => {
   .then(u => {
     u
     .getPlanners({ order: [ [ 'createdAt', 'ASC' ] ] })
-    .then(result => resolve(result))
+    .then(resolve)
     .catch(e => {
       console.error(e);
       reject({ code: 500, code: error.code.E_DBERROR });

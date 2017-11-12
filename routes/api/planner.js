@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiPlanner = require('../../api/planner');
+const apiTodoList = require('../../api/todo-list');
 
 const router = express.Router();
 
@@ -128,6 +129,43 @@ router.delete('/:id(\\d+)', (req, res, next) => {
   .catch(e => {
     res.status(e.status).type('application/json').send(error.toJSON(e.code));
   });
+});
+
+/************************/
+/* TO-DO LIST RESOURCES */
+/************************/
+
+/*
+ * GET /planner/:id/todo-list
+ * Gets a list of all to-do lists saved in the selected planner.
+ */
+router.get('/:id(\\d+)/todo-list', (req, res, next) => {
+  const stripPlanner = req.query.stripPlanner === 'true';
+  const stripUser = req.query.stripUser === 'true';
+  apiTodoList
+  .getAll(req.user, req.params.id)
+  .then(lists => {
+    const promises = lists.map(l => apiTodoList.toJSON(l, {
+      stripPlanner: stripPlanner,
+      stripUser: stripUser
+    }));
+    Promise
+    .all(promises)
+    .then(o => res.status(200).type('application/json').send(o))
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
+});
+
+/*
+ * POST /planner/:id/todo-list
+ * Addes a new to-do list to the selected planner.
+ */
+router.post('/:id(\\d+)/todo-list', (req, res, next) => {
 });
 
 module.exports = router;

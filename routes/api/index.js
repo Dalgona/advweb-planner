@@ -14,6 +14,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 
 router.use('/user', require('./user'));
 router.use('/planner', require('./planner'));
+router.use('/label', require('./label'));
 
 router.get('/', (req, res, next) => {
   res.send('welcome to api');

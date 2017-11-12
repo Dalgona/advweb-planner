@@ -36,6 +36,16 @@ router.get('/:id(\\d+)', (req, res, next) => {
  * Modifies information of specified to-do list item.
  */
 router.put('/:id(\\d+)', (req, res, next) => {
+  const title = (req.body.title || '').trim();
+  const complete = req.body.complete ? req.body.complete === 'true' : null;
+  apiTodoItem
+  .update(req.user, req.params.id, { title: title, complete: complete })
+  .then(item => {
+    res.status(205).type('application/json').send(apiTodoItem.toJSON(item));
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 /*

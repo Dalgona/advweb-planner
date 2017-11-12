@@ -64,7 +64,28 @@ const get = (token, itemId) => new Promise((resolve, reject) => {
 /*
  * Modifies information of specified to-do list item.
  */
-//const update
+const update = (token, itemId, args) => new Promise((resolve, reject) => {
+  get(token, itemId)
+  .then(item => {
+    let change = false;
+    if (args.title) {
+      item.title = args.title;
+      change = true;
+    }
+    if (args.complete !== null) {
+      item.complete = args.complete;
+      change = true;
+    }
+    if (change) {
+      item.modifiedAt = new Date();
+    }
+    item.save().then(resolve).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
 /*
  * Permanently deletes specified to-do list item.
@@ -82,7 +103,7 @@ const toJSON = instance => ({
 module.exports = {
   create: create,
   get: get,
-  //update: update,
+  update: update,
   //delete: delete_,
   toJSON: toJSON
 };

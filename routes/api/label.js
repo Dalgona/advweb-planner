@@ -74,7 +74,18 @@ router.get('/:id(\\d+)', (req, res, next) => {
  * Modifies information of selected label.
  */
 router.put('/:id(\\d+)', (req, res, next) => {
-  req.send('modify label #' + req.params.id);
+  const title = (req.body.title || '').trim();
+  apiLabel
+  .update(req.user, req.params.id, {
+    title: title,
+    color: req.body.color
+  })
+  .then(l => {
+    res.status(205).type('application/json').send(apiLabel.toJSON(l));
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 /*
@@ -83,7 +94,16 @@ router.put('/:id(\\d+)', (req, res, next) => {
  * The label will be removed from all schedules.
  */
 router.delete('/:id(\\d+)', (req, res, next) => {
-  req.send('delete label #' + req.params.id);
+  apiLabel
+  .delete(req.user, req.params.id)
+  .then(() => {
+    res.status(205).type('application/json').send({
+      message: 'label deleted'
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  })
 });
 
 module.exports = router;

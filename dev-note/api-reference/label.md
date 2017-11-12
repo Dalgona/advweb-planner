@@ -77,8 +77,8 @@ Content-type: `application/x-www-form-urlencoded`
 | title | string                     | Title of a new label | no        |
 | color | string `/#[0-9A-Fa-f]{6}/` | Label color          | no        |
 
-If the value of `color` does not match the regex, the default value will be
-inserted instead.
+If the value of `color` does not match the regex, label color will remain
+unchanged.
 
 ### Response
 

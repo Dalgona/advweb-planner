@@ -71,12 +71,39 @@ const get = (token, id) => new Promise((resolve, reject) => {
  * Modifies information of selected label.
  */
 const update = (token, id, args) => new Promise((resolve, reject) => {
+  get(token, id)
+  .then(l => {
+    let change = false;
+    if (args.title) {
+      l.title = args.title;
+      change = true;
+    }
+    if (/#[0-9A-Fa-f]{6}/.test(args.color)) {
+      l.color = args.color;
+      change = true;
+    }
+    if (change) {
+      l.modifiedAt = new Date();
+    }
+    l.save().then(resolve).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
 });
 
 /*
  * Permanently deletes selected label.
  */
 const delete_ = (token, id) => new Promise((resolve, reject) => {
+  get(token, id)
+  .then(l => {
+    l.destroy().then(resolve).catch({
+      status: 500, code: error.code.E_DBERROR
+    });
+  })
+  .catch(reject);
 });
 
 const toJSON = instance => ({

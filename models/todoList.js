@@ -3,8 +3,7 @@ module.exports = function (sequelize, DataTypes) {
     id: { type: DataTypes.BIGINT, primaryKey: true, autoIncrement: true },
     createdAt: { type: DataTypes.DATE(6), allowNull: false },
     modifiedAt: { type: DataTypes.DATE(6), allowNull: false },
-    title: { type: DataTypes.STRING, allowNull: false },
-    complete: { type: DataTypes.BOOLEAN, allowNull: false, defaultValue: false }
+    title: { type: DataTypes.STRING, allowNull: false }
   });
 
   TodoList.associate = models => {

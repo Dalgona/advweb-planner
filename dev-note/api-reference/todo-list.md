@@ -38,7 +38,7 @@ Content-Type: `application/x-www-form-urlencoded`
 
 | name  | type   | description                 | required? |
 |-------|--------|-----------------------------|-----------|
-| title | string | Title of the new to-do list | yes       |
+| title | string | Title of the new to-do list | no        |
 
 Content-Type: `(QUERY STRING)`
 

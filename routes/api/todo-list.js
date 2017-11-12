@@ -43,8 +43,22 @@ router.get('/:id(\\d+)', (req, res, next) => {
  * Modifies information of specified to-do list.
  */
 router.put('/:id(\\d+)', (req, res, next) => {
+  const title = (req.body.title || '').trim();
   const stripPlanner = req.query.stripPlanner === 'true';
   const stripUser = req.query.stripUser === 'true';
+  apiTodoList
+  .update(req.user, req.params.id, title)
+  .then(l => {
+    apiTodoList
+    .toJSON(l, { stripPlanner: stripPlanner, stripUser: stripUser })
+    .then(o => res.status(205).type('application/json').send(o))
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 /*

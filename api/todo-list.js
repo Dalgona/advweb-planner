@@ -77,7 +77,20 @@ const get = (token, listId) => new Promise((resolve, reject) => {
 /*
  * Modifies information of selected to-do list.
  */
-//const update
+const update = (token, listId, title) => Promise((resolve, reject) => {
+  get(token, listId)
+  .then(list => {
+    if (title) {
+      list.title = title;
+      list.modifiedAt = new Date();
+    }
+    list.save().then(resolve).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
 /*
  * Permanently deletes information of selected to-do list.
@@ -132,7 +145,7 @@ module.exports = {
   getAll: getAll,
   create: create,
   get: get,
-  //update: update,
+  update: update,
   delete: delete_,
   toJSON: toJSON
 };

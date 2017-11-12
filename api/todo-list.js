@@ -107,7 +107,7 @@ const update = (token, listId, title) => Promise((resolve, reject) => {
 const delete_ = (token, listId) => new Promise((resolve, reject) => {
   get(token, listId)
   .then(list => {
-    list.destroy().then(resolve).catch(e => {
+    list.destroy({ force: true }).then(resolve).catch(e => {
       console.error(e);
       reject({ status: 500, code: error.code.E_DBERROR });
     });

@@ -93,7 +93,7 @@ const update = (token, itemId, args) => new Promise((resolve, reject) => {
 const delete_ = (token, itemId) => new Promise((resolve, reject) => {
   get(token, itemId)
   .then(item => {
-    item.destroy().then(resolve).catch(e => {
+    item.destroy({ force: true }).then(resolve).catch(e => {
       console.error(e);
       reject({ status: 500, code: error.code.E_DBERROR });
     });

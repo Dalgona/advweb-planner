@@ -20,6 +20,8 @@ None.
 
 This API responds with a list of `label` objects on success.
 
+----------------------------------------------------------------------
+
 ## POST `/label`
 
 ### Description
@@ -44,6 +46,8 @@ inserted instead.
 
 This API responds with a new `label` object on success.
 
+----------------------------------------------------------------------
+
 ## GET `/label/:id`
 
 ### Description
@@ -59,6 +63,8 @@ None.
 ### Response
 
 This API responds with a corresponding `label` object on success.
+
+----------------------------------------------------------------------
 
 ## PUT `/label/:id`
 
@@ -83,6 +89,8 @@ unchanged.
 ### Response
 
 This API responds with an updated `label` object on success.
+
+----------------------------------------------------------------------
 
 ## DELETE `/label/:id`
 

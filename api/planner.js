@@ -75,7 +75,7 @@ const update = (token, plannerId, title) => new Promise((resolve, reject) => {
       p.title = title;
       p.modifiedAt = new Date();
     }
-    p.save().then(p2 => resolve(p2)).catch(e => {
+    p.save().then(resolve).catch(e => {
       console.error(e);
       reject({ status: 500, code: error.code.E_DBERROR });
     });

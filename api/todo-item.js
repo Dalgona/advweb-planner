@@ -90,7 +90,16 @@ const update = (token, itemId, args) => new Promise((resolve, reject) => {
 /*
  * Permanently deletes specified to-do list item.
  */
-//const delete_
+const delete_ = (token, itemId) => new Promise((resolve, reject) => {
+  get(token, itemId)
+  .then(item => {
+    item.destroy().then(resolve).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
 const toJSON = instance => ({
   id: instance.id,
@@ -104,6 +113,6 @@ module.exports = {
   create: create,
   get: get,
   update: update,
-  //delete: delete_,
+  delete: delete_,
   toJSON: toJSON
 };

@@ -136,22 +136,48 @@ router.delete('/:id(\\d+)', (req, res, next) => {
 /* SCHEDULE RESOURCES */
 /**********************/
 
-const sBase = '/:id(\\d+)/schedule'
+const sBase = '/:id(\\d+)/schedule';
+
+const processScheduleListRequest = (req, res, next, ...args) => {
+  const stripPlanner = req.query.stripPlanner === 'true';
+  const stripUser = req.query.stripUser === 'true';
+  apiSchedule
+  .getList(req.user, req.params.id, args)
+  .then(list => {
+    Promise
+    .all(list.map(x => apiSchedule.toJSON(x, {
+      stripPlanner: stripPlanner, stripUser: stripUser
+    })))
+    .then(o => res.status(200).type('application/json').send(o))
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
+};
 
 router.get(sBase + '/:year(\\d+)/:month(\\d+)/:day(\\d+)', (req, res, next) => {
-  res.send(`get all schedules in ${req.params.year}/${req.params.month}/${req.params.day} from planner #${req.params.id}`);
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month);
+  const day = parseInt(req.params.day);
+  processScheduleListRequest(req, res, next, year, month, day);
 });
 
 router.get(sBase + '/:year(\\d+)/:month(\\d+)', (req, res, next) => {
-  res.send(`get all schedules in ${req.params.year}/${req.params.month} from planner #${req.params.id}`);
+  const year = parseInt(req.params.year);
+  const month = parseInt(req.params.month);
+  processScheduleListRequest(req, res, next, year, month);
 });
 
 router.get(sBase + '/:year(\\d+)', (req, res, next) => {
-  res.send(`get all schedules in ${req.params.year} from planner #${req.params.id}`);
+  const year = parseInt(req.params.year);
+  processScheduleListRequest(req, res, next, year);
 });
 
 router.get(sBase, (req, res, next) => {
-  res.send(`get all schedules from planner #${req.params.id}`);
+  processScheduleListRequest(req, res, next);
 });
 
 router.post(sBase, (req, res, next) => {

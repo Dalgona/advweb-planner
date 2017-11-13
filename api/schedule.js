@@ -2,6 +2,7 @@ const error = require('./error');
 const Schedule = require('../models').Schedule;
 const apiPlanner = require('./planner');
 const apiLabel = require('./label');
+const Op = require('sequelize').Op;
 
 /*
  * Processes parameters for POST and PUT requests.
@@ -37,6 +38,66 @@ const fromLabelIds = (token, ids) => new Promise((resolve, reject) => {
   Promise
   .all(ids.map(id => apiLabel.get(token, id)))
   .then(resolve)
+  .catch(reject);
+});
+
+/*
+ * Gets an appropriately filtered list of schedules.
+ * arg[0]: year
+ * arg[1]: month
+ * arg[2]: date
+ */
+const getList = (token, plannerId, arg) => new Promise((resolve, reject) => {
+  let where;
+  switch (arg.length) {
+  case 1:
+    where = {
+      startsAt: {
+        [Op.and]: {
+          [Op.gte]: new Date(arg[0], 0, 1, 0, 0, 0, 0),
+          [Op.lt]: new Date(arg[0] + 1, 0, 1, 0, 0, 0, 0)
+        }
+      }
+    };
+    break;
+  case 2:
+    where = {
+      startsAt: {
+        [Op.and]: {
+          [Op.gte]: new Date(arg[0], arg[1] - 1, 1, 0, 0, 0, 0),
+          [Op.lt]: new Date(arg[0], arg[1], 1, 0, 0, 0, 0)
+        }
+      }
+    };
+    break;
+  case 3:
+    where = {
+      startsAt: {
+        [Op.and]: {
+          [Op.gte]: new Date(arg[0], arg[1] - 1, arg[2], 0, 0, 0, 0),
+          [Op.lt]: new Date(arg[0], arg[1] - 1, arg[2] + 1, 0, 0, 0, 0)
+        }
+      }
+    };
+    break;
+  default:
+    where = {};
+    break;
+  }
+  apiPlanner
+  .get(token, plannerId)
+  .then(p => {
+    p
+    .getSchedules({
+      where: where,
+      order: [ [ 'startsAt', 'ASC' ] ]
+    })
+    .then(resolve)
+    .catch(e => {
+      console.log(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
   .catch(reject);
 });
 
@@ -127,5 +188,6 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
 module.exports = {
   processArgs: processArgs,
   create: create,
+  getList: getList,
   toJSON: toJSON
 };

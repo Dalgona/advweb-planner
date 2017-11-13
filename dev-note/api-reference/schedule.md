@@ -41,28 +41,18 @@ Adds a new schedule to the specified planner.
 
 Content-Type: `application/x-www-form-urlencoded`
 
-| name        | type    | description                           | required? |
-|-------------|---------|---------------------------------------|-----------|
-| title       | string  | Title of the new schedule             | yes       |
-| location    | string  | Location of appointment               | no        |
-| description | string  | Detailed description of this schedule | no        |
-| startYear   | integer | The date/time this schedule starts    | yes       |
-| startMonth  | 1-12    | The date/time this schedule starts    | yes       |
-| startDate   | 1-31    | The date/time this schedule starts    | yes       |
-| startHour   | 0-23    | The date/time this schedule starts    | yes       |
-| startMinute | 0-59    | The date/time this schedule starts    | yes       |
-| endYear     | integer | The date/time this schedule ends      | see below |
-| endMonth    | 1-12    | The date/time this schedule ends      | see below |
-| endDate     | 1-31    | The date/time this schedule ends      | see below |
-| endHour     | 0-23    | The date/time this schedule ends      | see below |
-| endMinute   | 0-59    | The date/time this schedule ends      | see below |
-| allday      | boolean | All-day event                         | see below |
-| labels      | string  |                                       | no        |
+| name        | type     | description                           | required? |
+|-------------|----------|---------------------------------------|-----------|
+| title       | string   | Title of the new schedule             | yes       |
+| location    | string   | Location of appointment               | no        |
+| description | string   | Detailed description of this schedule | no        |
+| startsAt    | datetime | Starting date of this schedule        | yes       |
+| endsAt      | datetime | Ending date of this schedule          | see below |
+| allday      | boolean  | All-day event                         | see below |
+| labels      | string   |                                       | no        |
 
-If `allday` is set to true, `startHour`, `startMinue`, and all parameters
-starting with `end` are ignored and set to `0`, `0`, and the end of the starting
-date. Otherwise, `end*` parameters are required and they must represent the
-date/time past the starting date/time.
+* `startsAt` and `endsAt` must be ISO 8601-compliant date/time strings.
+* If `allday` is set to true, the `endsAt` parameter is ignored.
 
 Content-Type: `(QUERY STRING)`
 
@@ -114,28 +104,18 @@ Modifies information of specified schedule.
 
 Content-Type: `application/x-www-form-urlencoded`
 
-| name        | type    | description                           | required? |
-|-------------|---------|---------------------------------------|-----------|
-| title       | string  | Title of the new schedule             | yes       |
-| location    | string  | Location of appointment               | no        |
-| description | string  | Detailed description of this schedule | no        |
-| startYear   | integer | The date/time this schedule starts    | yes       |
-| startMonth  | 1-12    | The date/time this schedule starts    | yes       |
-| startDate   | 1-31    | The date/time this schedule starts    | yes       |
-| startHour   | 0-23    | The date/time this schedule starts    | yes       |
-| startMinute | 0-59    | The date/time this schedule starts    | yes       |
-| endYear     | integer | The date/time this schedule ends      | see below |
-| endMonth    | 1-12    | The date/time this schedule ends      | see below |
-| endDate     | 1-31    | The date/time this schedule ends      | see below |
-| endHour     | 0-23    | The date/time this schedule ends      | see below |
-| endMinute   | 0-59    | The date/time this schedule ends      | see below |
-| allday      | boolean | All-day event                         | see below |
-| labels      | string  |                                       | no        |
+| name        | type     | description                           | required? |
+|-------------|----------|---------------------------------------|-----------|
+| title       | string   | Title of the new schedule             | yes       |
+| location    | string   | Location of appointment               | no        |
+| description | string   | Detailed description of this schedule | no        |
+| startsAt    | datetime | Starting date of this schedule        | yes       |
+| endsAt      | datetime | Ending date of this schedule          | see below |
+| allday      | boolean  | All-day event                         | see below |
+| labels      | string   |                                       | no        |
 
-If `allday` is set to true, `startHour`, `startMinue`, and all parameters
-starting with `end` are ignored and set to `0`, `0`, and the end of the starting
-date. Otherwise, `end*` parameters are required and they must represent the
-date/time past the starting date/time.
+* `startsAt` and `endsAt` must be ISO 8601-compliant date/time strings.
+* If `allday` is set to true, the `endsAt` parameter is ignored.
 
 Content-Type: `(QUERY STRING)`
 

@@ -26,10 +26,10 @@ the selected planner. The second through fourth form will be mainly used. The
 first one shall return a list of *all* schedules, otherwise filtered by
 arguments specified in the *query string*.
 
-* `GET` `/planner/:id/schedules`
-* `GET` `/planner/:id/schedules/:year`
-* `GET` `/planner/:id/schedules/:year/:month`
-* `GET` `/planner/:id/schedules/:year/:month/:day`
+* `GET` `/planner/:id/schedule`
+* `GET` `/planner/:id/schedule/:year`
+* `GET` `/planner/:id/schedule/:year/:month`
+* `GET` `/planner/:id/schedule/:year/:month/:day`
 
 ### Other Schedule Resources
 
@@ -42,7 +42,7 @@ arguments specified in the *query string*.
 
 ### Accessing a List Itself
 
-* `GET` `/planner/:id/todo-lists` -- Get a list of all to-do lists in
+* `GET` `/planner/:id/todo-list` -- Get a list of all to-do lists in
   specified planner
 * `POST` `/planner/:id/todo-list` -- Create a new empty to-do list
 * `GET` `/todo-list/:id` -- Get information of single to-do list (with complete
@@ -59,7 +59,7 @@ arguments specified in the *query string*.
 
 ## Accessing Label Resources
 
-* `GET` `/labels` -- Get a list of all labels for the current user
+* `GET` `/label` -- Get a list of all labels for the current user
 * `POST` `/label` -- Create a new label
 * `GET` `/label/:id` -- Get information of single label
 * `PUT` `/label/:id` -- Modify specified label
@@ -69,18 +69,16 @@ arguments specified in the *query string*.
 
 | Endpoint | Available Method(s) |
 |-|-|
-| `/label` | POST |
+| `/label` | GET, POST |
 | `/label/:id` | GET, PUT, DELETE |
-| `/labels` | GET |
 | `/planner` | GET, POST |
 | `/planner/:id` | GET, PUT, DELETE |
 | `/planner/:id/schedule` | POST |
-| `/planner/:id/schedules` | GET |
-| `/planner/:id/schedules/:year` | GET |
-| `/planner/:id/schedules/:year/:month` | GET |
-| `/planner/:id/schedules/:year/:month/:day` | GET |
-| `/planner/:id/todo-list` | POST |
-| `/planner/:id/todo-lists` | GET |
+| `/planner/:id/schedule` | GET |
+| `/planner/:id/schedule/:year` | GET |
+| `/planner/:id/schedule/:year/:month` | GET |
+| `/planner/:id/schedule/:year/:month/:day` | GET |
+| `/planner/:id/todo-list` | GET, POST |
 | `/schedule/:id` | GET, PUT, DELETE |
 | `/todo-item/:id` | GET, PUT, DELETE |
 | `/todo-list/:id` | GET, PUT, DELETE |

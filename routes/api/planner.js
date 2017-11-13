@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiPlanner = require('../../api/planner');
+const apiSchedule = require('../../api/schedule');
 const apiTodoList = require('../../api/todo-list');
 
 const router = express.Router();
@@ -129,6 +130,61 @@ router.delete('/:id(\\d+)', (req, res, next) => {
   .catch(e => {
     res.status(e.status).type('application/json').send(error.toJSON(e.code));
   });
+});
+
+/**********************/
+/* SCHEDULE RESOURCES */
+/**********************/
+
+const sBase = '/:id(\\d+)/schedule'
+
+router.get(sBase + '/:year(\\d+)/:month(\\d+)/:day(\\d+)', (req, res, next) => {
+  res.send(`get all schedules in ${req.params.year}/${req.params.month}/${req.params.day} from planner #${req.params.id}`);
+});
+
+router.get(sBase + '/:year(\\d+)/:month(\\d+)', (req, res, next) => {
+  res.send(`get all schedules in ${req.params.year}/${req.params.month} from planner #${req.params.id}`);
+});
+
+router.get(sBase + '/:year(\\d+)', (req, res, next) => {
+  res.send(`get all schedules in ${req.params.year} from planner #${req.params.id}`);
+});
+
+router.get(sBase, (req, res, next) => {
+  res.send(`get all schedules from planner #${req.params.id}`);
+});
+
+router.post(sBase, (req, res, next) => {
+  const args = apiSchedule.processArgs(req.body);
+  const stripPlanner = req.query.stripPlanner === 'true';
+  const stripUser = req.query.stripUser === 'true';
+  const valid =
+    args.title
+    && args.startsAt
+    && (args.allday || (!args.allday && args.endsAt));
+  if (valid) {
+    apiSchedule
+    .create(req.user, req.params.id, args)
+    .then(s => {
+      apiSchedule
+      .toJSON(s, { stripPlanner: stripPlanner, stripUser: stripUser })
+      .then(o => res.status(201).type('application/json').send(o))
+      .catch(e => {
+        res
+        .status(e.status)
+        .type('application/json')
+        .send(error.toJSON(e.code));
+      });
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  } else {
+    res
+    .status(401)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_BADARG))
+  }
 });
 
 /************************/

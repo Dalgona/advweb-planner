@@ -14,12 +14,17 @@ const processArgs = reqBody => {
   const description = _trimmed(reqBody.description);
   const startsAt = reqBody.startsAt ? new Date(reqBody.startsAt) : null;
   const endsAt = reqBody.endsAt ? new Date(reqBody.endsAt) : null;
-  const allday = reqBody.allday === 'true';
+  const allday = reqBody.allday ? (reqBody.allday === 'true') : null;
   const labels =
-    (reqBody.labels || '')
-    .split(',')
-    .map(x => x.trim())
-    .filter(x => x !== '');
+    reqBody.labels
+      ? [...new Set(
+          reqBody
+          .labels
+          .split(',')
+          .map(x => x.trim())
+          .filter(x => x !== '')
+        )]
+      : null;
   return {
     title: title,
     location: location,
@@ -35,6 +40,10 @@ const processArgs = reqBody => {
  * Converts an array of label IDs into an array of label instances.
  */
 const fromLabelIds = (token, ids) => new Promise((resolve, reject) => {
+  if (ids == null) {
+    resolve([]);
+    return;
+  }
   Promise
   .all(ids.map(id => apiLabel.get(token, id)))
   .then(resolve)
@@ -165,7 +174,7 @@ const create = (token, plannerId, args) => new Promise((resolve, reject) => {
       location: args.location,
       startsAt: args.startsAt,
       endsAt: args.endsAt || new Date(0),
-      allday: args.allday
+      allday: args.allday || false
     })
     .then(s => {
       fromLabelIds(token, args.labels)

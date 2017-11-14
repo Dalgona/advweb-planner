@@ -65,46 +65,28 @@ const fromLabelIds = (token, ids) => new Promise((resolve, reject) => {
 
 /*
  * Gets an appropriately filtered list of schedules.
- * arg[0]: year
- * arg[1]: month
- * arg[2]: date
+ * arg: [year?, month?, date?]
  */
 const getList = (token, plannerId, arg) => new Promise((resolve, reject) => {
-  let where;
+  let where = {};
+  let dateGte;
+  let dateLt;
   switch (arg.length) {
   case 1:
-    where = {
-      startsAt: {
-        [Op.and]: {
-          [Op.gte]: new Date(arg[0], 0, 1, 0, 0, 0, 0),
-          [Op.lt]: new Date(arg[0] + 1, 0, 1, 0, 0, 0, 0)
-        }
-      }
-    };
+    dateGte = new Date(arg[0], 0, 1, 0, 0, 0, 0);
+    dateLt = new Date(arg[0] + 1, 0, 1, 0, 0, 0, 0);
     break;
   case 2:
-    where = {
-      startsAt: {
-        [Op.and]: {
-          [Op.gte]: new Date(arg[0], arg[1] - 1, 1, 0, 0, 0, 0),
-          [Op.lt]: new Date(arg[0], arg[1], 1, 0, 0, 0, 0)
-        }
-      }
-    };
+    dateGte = new Date(arg[0], arg[1] - 1, 1, 0, 0, 0, 0);
+    dateLt = new Date(arg[0], arg[1], 1, 0, 0, 0, 0);
     break;
   case 3:
-    where = {
-      startsAt: {
-        [Op.and]: {
-          [Op.gte]: new Date(arg[0], arg[1] - 1, arg[2], 0, 0, 0, 0),
-          [Op.lt]: new Date(arg[0], arg[1] - 1, arg[2] + 1, 0, 0, 0, 0)
-        }
-      }
-    };
+    dateGte = new Date(arg[0], arg[1] - 1, arg[2], 0, 0, 0, 0);
+    dateLt = new Date(arg[0], arg[1] - 1, arg[2] + 1, 0, 0, 0, 0);
     break;
-  default:
-    where = {};
-    break;
+  }
+  if (arg.length > 0) {
+    where = { startsAt: { [Op.and]: { [Op.gte]: dateGte, [Op.lt]: dateLt } } };
   }
   apiPlanner
   .get(token, plannerId)

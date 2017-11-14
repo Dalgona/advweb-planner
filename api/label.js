@@ -1,6 +1,7 @@
 const error = require('./error');
 const Label = require('../models').Label;
 const apiUser = require('./user');
+const { failWithDBError } = require('./utils');
 
 /*
  * Gets a list of all labels created by the current user.
@@ -12,10 +13,7 @@ const getAll = (token) => new Promise((resolve, reject) => {
     u
     .getLabels({ order: [ [ 'id', 'ASC' ] ] })
     .then(result => resolve(result))
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -36,10 +34,7 @@ const create = (token, args) => new Promise((resolve, reject) => {
       color: color
     })
     .then(resolve)
-    .catch(e => {
-      console.log(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    })
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -61,10 +56,7 @@ const get = (token, id) => new Promise((resolve, reject) => {
       reject({ status: 404, code: error.code.E_NOENT });
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -85,10 +77,7 @@ const update = (token, id, args) => new Promise((resolve, reject) => {
     if (change) {
       l.modifiedAt = new Date();
     }
-    l.save().then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    l.save().then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -99,10 +88,7 @@ const update = (token, id, args) => new Promise((resolve, reject) => {
 const delete_ = (token, id) => new Promise((resolve, reject) => {
   get(token, id)
   .then(l => {
-    l.destroy({ force: true }).then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    l.destroy({ force: true }).then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });

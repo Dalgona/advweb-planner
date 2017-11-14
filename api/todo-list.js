@@ -2,6 +2,7 @@ const error = require('../api/error');
 const TodoList = require('../models').TodoList;
 const apiPlanner = require('./planner');
 const apiTodoItem = require('./todo-item');
+const { failWithDBError } = require('./utils');
 
 /*
  * Gets a list of all to-do lists saved in the specified planner.
@@ -13,10 +14,7 @@ const getAll = (token, plannerId) => new Promise((resolve, reject) => {
     p
     .getTodoLists({ order: [ [ 'createdAt', 'ASC' ] ] })
     .then(resolve)
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -35,10 +33,7 @@ const create = (token, plannerId, title) => new Promise((resolve, reject) => {
       title: title
     })
     .then(resolve)
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -50,10 +45,7 @@ const getOwner = instance => new Promise((resolve, reject) => {
   instance
   .getPlanner()
   .then(p => resolve(p.UserId))
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -77,10 +69,7 @@ const get = (token, listId) => new Promise((resolve, reject) => {
       reject({ status: 404, code: error.code.E_NOENT });
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -93,10 +82,7 @@ const update = (token, listId, title) => Promise((resolve, reject) => {
       list.title = title;
       list.modifiedAt = new Date();
     }
-    list.save().then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    list.save().then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -107,10 +93,7 @@ const update = (token, listId, title) => Promise((resolve, reject) => {
 const delete_ = (token, listId) => new Promise((resolve, reject) => {
   get(token, listId)
   .then(list => {
-    list.destroy({ force: true }).then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    list.destroy({ force: true }).then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });

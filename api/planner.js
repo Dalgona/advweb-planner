@@ -1,6 +1,7 @@
 const error = require('../api/error');
 const Planner = require('../models').Planner;
 const apiUser = require('./user');
+const { failWithDBError } = require('./utils');
 
 /*
  * Creates a new Planner object and give it to the current user.
@@ -16,10 +17,7 @@ const create = (token, title) => new Promise((resolve, reject) => {
       title: title
     })
     .then(resolve)
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR});
-    })
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -34,10 +32,7 @@ const getAll = (token) => new Promise((resolve, reject) => {
     u
     .getPlanners({ order: [ [ 'createdAt', 'ASC' ] ] })
     .then(resolve)
-    .catch(e => {
-      console.error(e);
-      reject({ code: 500, code: error.code.E_DBERROR });
-    })
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -59,10 +54,7 @@ const get = (token, plannerId) => new Promise((resolve, reject) => {
       reject({ status: 404, code: error.code.E_NOENT });
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR })
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -75,10 +67,7 @@ const update = (token, plannerId, title) => new Promise((resolve, reject) => {
       p.title = title;
       p.modifiedAt = new Date();
     }
-    p.save().then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    p.save().then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -91,13 +80,7 @@ const delete_ = (token, plannerId, title) => new Promise((resolve, reject) => {
   get(token, plannerId)
   .then(p => {
     if (p.title === title) {
-      p
-      .destroy({ force: true })
-      .then(resolve)
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      p.destroy({ force: true }).then(resolve).catch(failWithDBError(reject));
     } else {
       reject({ status: 403, code: error.code.E_PLADELREFUSED });
     }
@@ -122,10 +105,7 @@ const toJSON = (instance, stripUser) => new Promise((resolve, reject) => {
       ret.owner = apiUser.toJSON(u);
       resolve(ret);
     })
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   }
 });
 

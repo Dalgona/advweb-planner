@@ -3,6 +3,7 @@ const Schedule = require('../models').Schedule;
 const apiPlanner = require('./planner');
 const apiLabel = require('./label');
 const Op = require('sequelize').Op;
+const { failWithDBError } = require('./utils');
 
 const setEquals = (set1, set2) => {
   if (set1.size !== set2.size) {
@@ -114,10 +115,7 @@ const getList = (token, plannerId, arg) => new Promise((resolve, reject) => {
       order: [ [ 'startsAt', 'ASC' ] ]
     })
     .then(resolve)
-    .catch(e => {
-      console.log(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -139,18 +137,12 @@ const get = (token, scheduleId) => new Promise((resolve, reject) => {
           reject({ status: 403, code: error.code.E_NOACCESS });
         }
       })
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      .catch(failWithDBError(reject));
     } else {
       reject({ status: 404, code: error.code.E_NOENT });
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -203,26 +195,17 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
               s2
               .setLabels(newLabels)
               .then(() => resolve(s2))
-              .catch(e => {
-                console.error(e);
-                reject({ status: 500, code: error.code.E_DBERROR });
-              });
+              .catch(failWithDBError(reject));
             })
             .catch(reject);
           }
         })
-        .catch(e => {
-          console.error(e);
-          reject({ status: 500, code: error.code.E_DBERROR });
-        });
+        .catch(failWithDBError(reject));
       } else {
         resolve(s);
       }
     })
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -233,10 +216,7 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
 const delete_ = (token, scheduleId) => new Promise((resolve, reject) => {
   get(token, scheduleId)
   .then(schedule => {
-    schedule.destroy().then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    schedule.destroy().then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -270,17 +250,11 @@ const create = (token, plannerId, args) => new Promise((resolve, reject) => {
         s
         .addLabels(labels)
         .then(() => resolve(s))
-        .catch(e => {
-          console.error(e);
-          reject({ status: 500, code: error.code.E_DBERROR });
-        });
+        .catch(failWithDBError(reject));
       })
       .catch(reject);
     })
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -317,16 +291,10 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
         })
         .catch(reject);
       })
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      .catch(failWithDBError(reject));
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 module.exports = {

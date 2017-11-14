@@ -6,6 +6,7 @@ const jwt = require('jsonwebtoken');
 const config = require('../config/config.json')[env]
 const error = require('../api/error');
 const User = require('../models').User;
+const { failWithDBError } = require('./utils');
 
 const _hashed = text =>
   crypto.createHash('sha256').update(text).digest('base64');
@@ -34,16 +35,10 @@ const create = (fullName, email, auth) => new Promise((resolve, reject) => {
       user
       .save()
       .then(newUser => resolve(newUser))
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      .catch(failWithDBError(reject));
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -61,10 +56,7 @@ const check = (token) => new Promise((resolve, reject) => {
       reject({ status: 401, code: error.code.E_NOAUTH });
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -84,10 +76,7 @@ const update = (token, fullName, auth) => new Promise((resolve, reject) => {
     if (newName || newAuth) {
       u.modifiedAt = new Date();
     }
-    u.save().then(u2 => resolve(u2)).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    u.save().then(u2 => resolve(u2)).catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -102,10 +91,7 @@ const delete_ = (token, email, auth) => new Promise((resolve, reject) => {
       u
       .destroy({ force: true })
       .then(resolve)
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      .catch(failWithDBError(reject));
     } else {
       reject({ status: 403, code: error.code.E_ACCDELREFUSED });
     }
@@ -135,10 +121,7 @@ const authenticate = (email, auth) => new Promise((resolve, reject) => {
       resolve(token);
     }
   })
-  .catch(e => {
-    console.error(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  })
+  .catch(failWithDBError(reject));
 });
 
 /*

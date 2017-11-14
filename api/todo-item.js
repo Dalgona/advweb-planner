@@ -1,6 +1,7 @@
 const error = require('../api/error');
 const TodoItem = require('../models').TodoItem;
 const apiTodoList = require('./todo-list');
+const { failWithDBError } = require('./utils');
 
 /*
  * Creates a new to-do list item
@@ -17,10 +18,7 @@ const create = (token, listId, title) => new Promise((resolve, reject) => {
       complete: false
     })
     .then(resolve)
-    .catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    .catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -47,18 +45,12 @@ const get = (token, itemId) => new Promise((resolve, reject) => {
         })
         .catch(reject);
       })
-      .catch(e => {
-        console.error(e);
-        reject({ status: 500, code: error.code.E_DBERROR });
-      });
+      .catch(failWithDBError(reject));
     } else {
       reject({ status: 404, code: error.code.E_NOENT });
     }
   })
-  .catch(e => {
-    console.log(e);
-    reject({ status: 500, code: error.code.E_DBERROR });
-  });
+  .catch(failWithDBError(reject));
 });
 
 /*
@@ -79,10 +71,7 @@ const update = (token, itemId, args) => new Promise((resolve, reject) => {
     if (change) {
       item.modifiedAt = new Date();
     }
-    item.save().then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    item.save().then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });
@@ -93,10 +82,7 @@ const update = (token, itemId, args) => new Promise((resolve, reject) => {
 const delete_ = (token, itemId) => new Promise((resolve, reject) => {
   get(token, itemId)
   .then(item => {
-    item.destroy({ force: true }).then(resolve).catch(e => {
-      console.error(e);
-      reject({ status: 500, code: error.code.E_DBERROR });
-    });
+    item.destroy({ force: true }).then(resolve).catch(failWithDBError(reject));
   })
   .catch(reject);
 });

@@ -134,7 +134,19 @@ const get = (token, scheduleId) => new Promise((resolve, reject) => {
 
 //const update = (token, scheduleId, args) => 
 
-//const delete_ = (token, scheduleId) => 
+/*
+ * Permanently deletes specified schedule.
+ */
+const delete_ = (token, scheduleId) => new Promise((resolve, reject) => {
+  get(token, scheduleId)
+  .then(schedule => {
+    schedule.destroy().then(resolve).catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
 /*
  * Adds a new schedule in specified planner.
@@ -226,6 +238,6 @@ module.exports = {
   getList: getList,
   get: get,
   //update: update,
-  //delete: delete_
+  delete: delete_,
   toJSON: toJSON
 };

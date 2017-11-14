@@ -52,6 +52,16 @@ router.put('/:id(\\d+)', (req, res, next) => {
  * Permanently deletes specified schedule.
  */
 router.delete('/:id(\\d+)', (req, res, next) => {
+  apiSchedule
+  .delete(req.user, req.params.id)
+  .then(() => {
+    res.status(205).type('application/json').send({
+      message: 'schedule deleted'
+    });
+  })
+  .catch(e => {
+    res.status(e.status).type('application/json').send(error.toJSON(e.code));
+  });
 });
 
 module.exports = router;

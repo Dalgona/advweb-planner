@@ -102,6 +102,41 @@ const getList = (token, plannerId, arg) => new Promise((resolve, reject) => {
 });
 
 /*
+ * Gets information of specified planner.
+ */
+const get = (token, scheduleId) => new Promise((resolve, reject) => {
+  Schedule
+  .findOne({ where: { id: scheduleId } })
+  .then(schedule => {
+    if (schedule) {
+      schedule
+      .getPlanner()
+      .then(p => {
+        if (p.UserId == token.userId) {
+          resolve(schedule);
+        } else {
+          reject({ status: 403, code: error.code.E_NOACCESS });
+        }
+      })
+      .catch(e => {
+        console.error(e);
+        reject({ status: 500, code: error.code.E_DBERROR });
+      });
+    } else {
+      reject({ status: 404, code: error.code.E_NOENT });
+    }
+  })
+  .catch(e => {
+    console.error(e);
+    reject({ status: 500, code: error.code.E_DBERROR });
+  });
+});
+
+//const update = (token, scheduleId, args) => 
+
+//const delete_ = (token, scheduleId) => 
+
+/*
  * Adds a new schedule in specified planner.
  */
 const create = (token, plannerId, args) => new Promise((resolve, reject) => {
@@ -189,5 +224,8 @@ module.exports = {
   processArgs: processArgs,
   create: create,
   getList: getList,
+  get: get,
+  //update: update,
+  //delete: delete_
   toJSON: toJSON
 };

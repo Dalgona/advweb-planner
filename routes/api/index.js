@@ -17,6 +17,7 @@ router.use('/planner', require('./planner'));
 router.use('/todo-list', require('./todo-list'));
 router.use('/todo-item', require('./todo-item'));
 router.use('/label', require('./label'));
+router.use('/schedule', require('./schedule'));
 
 router.use((req, res, next) => {
   res

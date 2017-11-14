@@ -22,6 +22,7 @@ const codes = {
   E_LOGINFAIL: 103,
   E_ACCDELREFUSED: 104,
   E_PLADELREFUSED: 201,
+  E_BADDATERANGE: 300,
   E_ARGMISSING: 800,
   E_BADARG: 801,
   E_DBERROR: 900,
@@ -36,6 +37,7 @@ messages[codes.E_EMAILDUP] = 'email address is duplicate';
 messages[codes.E_LOGINFAIL] = 'incorrect email address or password';
 messages[codes.E_ACCDELREFUSED] = 'you need more courage to delete an account';
 messages[codes.E_PLADELREFUSED] = 'are you really sure to delete this planner?';
+messages[codes.E_BADDATERANGE] = 'endsAt cannot be less than startsAt';
 messages[codes.E_ARGMISSING] = 'required arguments are missing';
 messages[codes.E_BADARG] = 'ill-formed argument';
 messages[codes.E_DBERROR] = 'database error';

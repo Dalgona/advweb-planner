@@ -65,7 +65,7 @@ This document lists all types of objects returned by API endpoints.
   "location": "Some restaurant",
   "startsAt": "2017-11-07T03:09:36.142Z",
   "endsAt": "2017-11-07T03:09:36.142Z",
-  "allDay": false,
+  "allday": false,
   "labels": [ ]
 }
 ```

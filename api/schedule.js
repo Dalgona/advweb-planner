@@ -4,6 +4,18 @@ const apiPlanner = require('./planner');
 const apiLabel = require('./label');
 const Op = require('sequelize').Op;
 
+const setEquals = (set1, set2) => {
+  if (set1.size !== set2.size) {
+    return false;
+  }
+  for (let e of set1) {
+    if (!set2.has(e)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 /*
  * Processes parameters for POST and PUT requests.
  */
@@ -141,7 +153,79 @@ const get = (token, scheduleId) => new Promise((resolve, reject) => {
   });
 });
 
-//const update = (token, scheduleId, args) => 
+/*
+ * Updates information of specified schedule.
+ */
+const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
+  get(token, scheduleId)
+  .then(s => {
+    s
+    .getLabels()
+    .then(labels => {
+      let change = false;
+      let changeLabel = false;
+      const keys = [
+        'title', 'location', 'description', 'allday'
+      ];
+      for (let key of keys) {
+        if (args[key] != null && s[key] != args[key]) {
+          s[key] = args[key];
+          change = true;
+        }
+      }
+      if (args.startsAt && s.startsAt.getTime() != args.startsAt.getTime()) {
+        s.startsAt = args.startsAt;
+        change = true;
+      }
+      if (args.endsAt && s.endsAt.getTime() != args.endsAt.getTime()) {
+        s.endsAt = args.endsAt;
+        change = true;
+      }
+      if (args.labels
+        && !setEquals(new Set(labels.map(l => '' + l.id)), new Set(args.labels))) {
+        change = true;
+        changeLabel = true;
+      }
+      if (change) {
+        if (!s.allday && s.startsAt > s.endsAt) {
+          reject({ status: 400, code: error.code.E_BADDATERANGE });
+          return;
+        }
+        s.modifiedAt = new Date();
+        s
+        .save()
+        .then(s2 => {
+          if (!changeLabel) {
+            resolve(s2);
+          } else {
+            fromLabelIds(token, args.labels)
+            .then(newLabels => {
+              s2
+              .setLabels(newLabels)
+              .then(() => resolve(s2))
+              .catch(e => {
+                console.error(e);
+                reject({ status: 500, code: error.code.E_DBERROR });
+              });
+            })
+            .catch(reject);
+          }
+        })
+        .catch(e => {
+          console.error(e);
+          reject({ status: 500, code: error.code.E_DBERROR });
+        });
+      } else {
+        resolve(s);
+      }
+    })
+    .catch(e => {
+      console.error(e);
+      reject({ status: 500, code: error.code.E_DBERROR });
+    });
+  })
+  .catch(reject);
+});
 
 /*
  * Permanently deletes specified schedule.
@@ -164,6 +248,10 @@ const create = (token, plannerId, args) => new Promise((resolve, reject) => {
   apiPlanner
   .get(token, plannerId)
   .then(p => {
+    if (!args.allday && args.startsAt > args.endsAt) {
+      reject({ status: 400, code: error.code.E_BADDATERANGE });
+      return;
+    }
     const now = new Date();
     p
     .createSchedule({
@@ -246,7 +334,7 @@ module.exports = {
   create: create,
   getList: getList,
   get: get,
-  //update: update,
+  update: update,
   delete: delete_,
   toJSON: toJSON
 };

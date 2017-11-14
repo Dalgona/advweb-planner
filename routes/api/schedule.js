@@ -43,8 +43,33 @@ router.get('/:id(\\d+)', (req, res, next) => {
  * Updates information of specified schedule.
  */
 router.put('/:id(\\d+)', (req, res, next) => {
-  const stripPlanner = req.query.stripPlanner;
-  const stripUser = req.query.stripPlanner;
+  const args = apiSchedule.processArgs(req.body);
+  const stripPlanner = req.query.stripPlanner === 'true';
+  const stripUser = req.query.stripUser === 'true';
+  const valid = args.title && (args.allday || (!args.allday && args.endsAt));
+  if (valid) {
+    apiSchedule
+    .update(req.user, req.params.id, args)
+    .then(s => {
+      apiSchedule
+      .toJSON(s, { stripPlanner: stripPlanner, stripUser: stripUser })
+      .then(o => res.status(205).type('application/json').send(o))
+      .catch(e => {
+        res
+        .status(e.status)
+        .type('application/json')
+        .send(error.toJSON(e.code));
+      });
+    })
+    .catch(e => {
+      res.status(e.status).type('application/json').send(error.toJSON(e.code));
+    });
+  } else {
+    res
+    .status(400)
+    .type('application/json')
+    .send(error.toJSON(error.code.E_BADARG));
+  }
 });
 
 /*

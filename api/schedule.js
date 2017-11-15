@@ -1,21 +1,10 @@
+const _ = require('lodash');
 const error = require('./error');
 const Schedule = require('../models').Schedule;
 const apiPlanner = require('./planner');
 const apiLabel = require('./label');
 const Op = require('sequelize').Op;
 const { failWithDBError } = require('./utils');
-
-const setEquals = (set1, set2) => {
-  if (set1.size !== set2.size) {
-    return false;
-  }
-  for (let e of set1) {
-    if (!set2.has(e)) {
-      return false;
-    }
-  }
-  return true;
-};
 
 /*
  * Processes parameters for POST and PUT requests.
@@ -139,26 +128,21 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
       let change = false;
       let changeLabel = false;
       const keys = [
-        'title', 'location', 'description', 'allday'
+        'title', 'location', 'description', 'allday', 'startsAt', 'endsAt'
       ];
       for (let key of keys) {
-        if (args[key] != null && s[key] != args[key]) {
+        if (args[key] != null && !_.isEqual(s[key], args[key])) {
           s[key] = args[key];
           change = true;
         }
       }
-      if (args.startsAt && s.startsAt.getTime() != args.startsAt.getTime()) {
-        s.startsAt = args.startsAt;
-        change = true;
-      }
-      if (args.endsAt && s.endsAt.getTime() != args.endsAt.getTime()) {
-        s.endsAt = args.endsAt;
-        change = true;
-      }
-      if (args.labels
-        && !setEquals(new Set(labels.map(l => '' + l.id)), new Set(args.labels))) {
-        change = true;
-        changeLabel = true;
+      if (args.labels) {
+        const origLabelSet = new Set(labels.map(l => '' + l.id));
+        const newLabelSet = new Set(args.labels);
+        if (!_.isEqual(origLabelSet, newLabelSet)) {
+          change = true;
+          changeLabel = true;
+        }
       }
       if (change) {
         if (!s.allday && s.startsAt > s.endsAt) {

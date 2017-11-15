@@ -41,16 +41,18 @@ const processArgs = reqBody => {
 /*
  * Converts an array of label IDs into an array of label instances.
  */
-const fromLabelIds = (token, ids) => new Promise((resolve, reject) => {
-  if (ids == null) {
-    resolve([]);
-    return;
-  }
-  Promise
-  .all(ids.map(id => apiLabel.get(token, id)))
-  .then(resolve)
-  .catch(reject);
-});
+function fromLabelIds(token, ids) {
+  return new Promise((resolve, reject) => {
+    if (ids == null) {
+      resolve([]);
+      return;
+    }
+    Promise
+    .all(ids.map(id => apiLabel.get(token, id)))
+    .then(resolve)
+    .catch(reject);
+  });
+}
 
 /*
  * Gets an appropriately filtered list of schedules.
@@ -126,7 +128,7 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
     .getLabels()
     .then(labels => {
       let change = false;
-      let changeLabel = false;
+      let newLabelIds = null;
       const keys = [
         'title', 'location', 'description', 'allday', 'startsAt', 'endsAt'
       ];
@@ -141,7 +143,7 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
         const newLabelSet = new Set(args.labels);
         if (!_.isEqual(origLabelSet, newLabelSet)) {
           change = true;
-          changeLabel = true;
+          newLabelIds = args.labels;
         }
       }
       if (change) {
@@ -150,23 +152,7 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
           return;
         }
         s.modifiedAt = new Date();
-        s
-        .save()
-        .then(s2 => {
-          if (!changeLabel) {
-            resolve(s2);
-          } else {
-            fromLabelIds(token, args.labels)
-            .then(newLabels => {
-              s2
-              .setLabels(newLabels)
-              .then(() => resolve(s2))
-              .catch(failWithDBError(reject));
-            })
-            .catch(reject);
-          }
-        })
-        .catch(failWithDBError(reject));
+        doUpdate(token, s, newLabelIds).then(resolve).catch(reject);
       } else {
         resolve(s);
       }
@@ -175,6 +161,31 @@ const update = (token, scheduleId, args) => new Promise((resolve, reject) => {
   })
   .catch(reject);
 });
+
+/*
+ * Actually update the information to the DB.
+ */
+function doUpdate(token, schedule, newLabelIds) {
+  return new Promise((resolve, reject) => {
+    schedule
+    .save()
+    .then(newSchedule => {
+      if (!newLabelIds) {
+        resolve(newSchedule);
+      } else {
+        fromLabelIds(token, newLabelIds)
+        .then(newLabels => {
+          newSchedule
+          .setLabels(newLabels)
+          .then(() => resolve(newSchedule))
+          .catch(failWithDBError(reject));
+        })
+        .catch(reject);
+      }
+    })
+    .catch(failWithDBError(reject));
+  });
+}
 
 /*
  * Permanently deletes specified schedule.

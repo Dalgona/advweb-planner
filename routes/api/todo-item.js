@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiTodoItem = require('../../api/todo-item');
+const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
 
@@ -23,12 +24,8 @@ router.use(ejwt({ secret: config.jwtSecret }));
 router.get('/:id(\\d+)', (req, res, next) => {
   apiTodoItem
   .get(req.user, req.params.id)
-  .then(item => {
-    res.status(200).type('application/json').send(apiTodoItem.toJSON(item));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(item => sendJSON(res, 200, apiTodoItem.toJSON(item)))
+  .catch(sendError(res));
 });
 
 /*
@@ -40,12 +37,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
   const complete = req.body.complete ? req.body.complete === 'true' : null;
   apiTodoItem
   .update(req.user, req.params.id, { title: title, complete: complete })
-  .then(item => {
-    res.status(205).type('application/json').send(apiTodoItem.toJSON(item));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(item => sendJSON(res, 205, apiTodoItem.toJSON(item)))
+  .catch(sendError(res));
 });
 
 /*
@@ -55,14 +48,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiTodoItem
   .delete(req.user, req.params.id)
-  .then(() => {
-    res.status(205).type('application/json').send({
-      message: 'to-do list item deleted'
-    });
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(() => sendJSON(res, 205, { message: 'to-do list item deleted' }))
+  .catch(sendError(res));
 });
 
 module.exports = router;

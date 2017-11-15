@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiLabel = require('../../api/label');
+const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
 
@@ -23,12 +24,8 @@ router.use(ejwt({ secret: config.jwtSecret }));
 router.get('/', (req, res, next) => {
   apiLabel
   .getAll(req.user)
-  .then(labels => {
-    res.status(200).type('application/json').send(labels.map(apiLabel.toJSON));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(labels => sendJSON(res, 200, labels.map(apiLabel.toJSON)))
+  .catch(sendError(res));
 });
 
 /*
@@ -40,17 +37,10 @@ router.post('/', (req, res, next) => {
   if (title) {
     apiLabel
     .create(req.user, { title: title, color: req.body.color })
-    .then(l => {
-      res.status(201).type('application/json').send(apiLabel.toJSON(l));
-    })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(l => sendJSON(res, 201, apiLabel.toJSON(l)))
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 });
 
@@ -61,12 +51,8 @@ router.post('/', (req, res, next) => {
 router.get('/:id(\\d+)', (req, res, next) => {
   apiLabel
   .get(req.user, req.params.id)
-  .then(l => {
-    res.status(200).type('application/json').send(apiLabel.toJSON(l));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(l => sendJSON(res, 200, apiLabel.toJSON(l)))
+  .catch(sendError(res));
 });
 
 /*
@@ -80,12 +66,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
     title: title,
     color: req.body.color
   })
-  .then(l => {
-    res.status(205).type('application/json').send(apiLabel.toJSON(l));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(l => sendJSON(res, 205, apiLabel.toJSON(l)))
+  .catch(sendError(res));
 });
 
 /*
@@ -96,14 +78,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiLabel
   .delete(req.user, req.params.id)
-  .then(() => {
-    res.status(205).type('application/json').send({
-      message: 'label deleted'
-    });
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  })
+  .then(() => sendJSON(res, 205, { message: 'label deleted' }))
+  .catch(sendError(res));
 });
 
 module.exports = router;

@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiUser = require('../../api/user');
+const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
 
@@ -21,12 +22,8 @@ const router = express.Router();
 router.get('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
   apiUser
   .check(req.user)
-  .then(u => {
-    res.status(200).type('application/json').send(apiUser.toJSON(u));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(u => sendJSON(res, 200, apiUser.toJSON(u)))
+  .catch(sendError(res));
 });
 
 /*
@@ -43,17 +40,10 @@ router.post('/', (req, res, next) => {
   if (valid) {
     apiUser
     .create(fullName, email, auth)
-    .then(newUser => {
-      res.status(201).type('application/json').send(apiUser.toJSON(newUser));
-    })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(newUser => sendJSON(res, 201, apiUser.toJSON(newUser)))
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 });
 
@@ -64,12 +54,8 @@ router.post('/', (req, res, next) => {
 router.put('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
   apiUser
   .update(req.user, req.body.fullName, req.body.auth)
-  .then(u => {
-    res.status(205).type('application/json').send(apiUser.toJSON(u));
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(u => sendJSON(res, 205, apiUser.toJSON(u)))
+  .catch(sendError(res));
 });
 
 /*
@@ -85,19 +71,10 @@ router.delete('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
   if (valid) {
     apiUser
     .delete(req.user, email, auth)
-    .then(() => {
-      res.status(205).type('application/json').send({
-        message: "account deleted"
-      });
-    })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(() => sendJSON(res, 205, { message: 'account deleted' }))
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 });
 
@@ -115,17 +92,10 @@ router.post('/authenticate', (req, res, next) => {
   if (valid) {
     apiUser
     .authenticate(email, auth)
-    .then(token => {
-      res.status(200).type('application/json').send({ token: token });
-    })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(token => sendJSON(res, 200, { token: token }))
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 })
 

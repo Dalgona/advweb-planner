@@ -11,6 +11,7 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiSchedule = require('../../api/schedule');
+const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
 
@@ -28,14 +29,10 @@ router.get('/:id(\\d+)', (req, res, next) => {
   .then(s => {
     apiSchedule
     .toJSON(s, { stripPlanner: stripPlanner, stripUser: stripUser })
-    .then(o => res.status(200).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 200, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 });
 
 /*
@@ -53,22 +50,12 @@ router.put('/:id(\\d+)', (req, res, next) => {
     .then(s => {
       apiSchedule
       .toJSON(s, { stripPlanner: stripPlanner, stripUser: stripUser })
-      .then(o => res.status(205).type('application/json').send(o))
-      .catch(e => {
-        res
-        .status(e.status)
-        .type('application/json')
-        .send(error.toJSON(e.code));
-      });
+      .then(o => sendJSON(res, 205, o))
+      .catch(sendError(res));
     })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_BADARG));
+    sendError(res)(400, error.code.E_BADARG);
   }
 });
 
@@ -79,14 +66,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiSchedule
   .delete(req.user, req.params.id)
-  .then(() => {
-    res.status(205).type('application/json').send({
-      message: 'schedule deleted'
-    });
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(() => sendJSON(res, 205, { message: 'schedule deleted' }))
+  .catch(sendError(res));
 });
 
 module.exports = router;

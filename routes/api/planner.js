@@ -13,6 +13,7 @@ const error = require('../../api/error');
 const apiPlanner = require('../../api/planner');
 const apiSchedule = require('../../api/schedule');
 const apiTodoList = require('../../api/todo-list');
+const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
 
@@ -28,14 +29,10 @@ router.get('/', (req, res, next) => {
   .getAll(req.user)
   .then(result => {
     Promise.all(result.map(p => apiPlanner.toJSON(p, stripUser)))
-    .then(x => res.status(200).type('application/json').send(x))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    })
+    .then(x => sendJSON(res, 200, x))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  })
+  .catch(sendError(res));
 });
 
 /*
@@ -51,22 +48,12 @@ router.post('/', (req, res, next) => {
     .then(p => {
       apiPlanner
       .toJSON(p, stripUser)
-      .then(o => res.status(201).type('application/json').send(o))
-      .catch(e => {
-        res
-        .status(e.status)
-        .type('application/json')
-        .send(error.toJSON(e.code));
-      });
+      .then(o => sendJSON(res, 201, o))
+      .catch(sendError(res));
     })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 });
 
@@ -82,14 +69,10 @@ router.get('/:id(\\d+)', (req, res, next) => {
   .then(p => {
     apiPlanner
     .toJSON(p, stripUser)
-    .then(o => res.status(200).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 200, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 });
 
 /*
@@ -104,14 +87,10 @@ router.put('/:id(\\d+)', (req, res, next) => {
   .then(p => {
     apiPlanner
     .toJSON(p, stripUser)
-    .then(o => res.status(205).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 205, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 });
 
 /*
@@ -122,14 +101,8 @@ router.delete('/:id(\\d+)', (req, res, next) => {
   const title = req.body.title || '';
   apiPlanner
   .delete(req.user, req.params.id, title)
-  .then(() => {
-    res.status(205).type('application/json').send({
-      message: 'planner deleted'
-    });
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(() => sendJSON(res, 205, { message: 'planner deleted '}))
+  .catch(sendError(res));
 });
 
 /**********************/
@@ -148,14 +121,10 @@ const processScheduleListRequest = (req, res, next, ...args) => {
     .all(list.map(x => apiSchedule.toJSON(x, {
       stripPlanner: stripPlanner, stripUser: stripUser
     })))
-    .then(o => res.status(200).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 200, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 };
 
 router.get(sBase + '/:year(\\d+)/:month(\\d+)/:day(\\d+)', (req, res, next) => {
@@ -194,22 +163,12 @@ router.post(sBase, (req, res, next) => {
     .then(s => {
       apiSchedule
       .toJSON(s, { stripPlanner: stripPlanner, stripUser: stripUser })
-      .then(o => res.status(201).type('application/json').send(o))
-      .catch(e => {
-        res
-        .status(e.status)
-        .type('application/json')
-        .send(error.toJSON(e.code));
-      });
+      .then(o => sendJSON(res, 201, o))
+      .catch(sendError(res));
     })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .catch(sendError(res));
   } else {
-    res
-    .status(401)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_BADARG))
+    sendError(res)(400, error.code.E_BADARG);
   }
 });
 
@@ -233,14 +192,10 @@ router.get('/:id(\\d+)/todo-list', (req, res, next) => {
     }));
     Promise
     .all(promises)
-    .then(o => res.status(200).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 200, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 });
 
 /*
@@ -257,22 +212,12 @@ router.post('/:id(\\d+)/todo-list', (req, res, next) => {
     .then(l => {
       apiTodoList
       .toJSON(l, { stripPlanner: stripPlanner, stripUser: stripUser })
-      .then(o => res.status(201).type('application/json').send(o))
-      .catch(e => {
-        res
-        .status(e.status)
-        .type('application/json')
-        .send(error.toJSON(e.code));
-      });
+      .then(o => sendJSON(res, 201, o))
+      .catch(sendError(res));
     })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 });
 

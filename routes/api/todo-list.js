@@ -12,6 +12,7 @@ const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiTodoList = require('../../api/todo-list');
 const apiTodoItem = require('../../api/todo-item');
+const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
 
@@ -29,14 +30,10 @@ router.get('/:id(\\d+)', (req, res, next) => {
   .then(l => {
     apiTodoList
     .toJSON(l, { stripPlanner: stripPlanner, stripUser: stripUser })
-    .then(o => res.status(200).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 200, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('applicaiton/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 });
 
 /*
@@ -52,14 +49,10 @@ router.put('/:id(\\d+)', (req, res, next) => {
   .then(l => {
     apiTodoList
     .toJSON(l, { stripPlanner: stripPlanner, stripUser: stripUser })
-    .then(o => res.status(205).type('application/json').send(o))
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(o => sendJSON(res, 205, o))
+    .catch(sendError(res));
   })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .catch(sendError(res));
 });
 
 /*
@@ -69,14 +62,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiTodoList
   .delete(req.user, req.params.id)
-  .then(() => {
-    res.status(205).type('application/json').send({
-      message: 'to-do list deleted'
-    });
-  })
-  .catch(e => {
-    res.status(e.status).type('application/json').send(error.toJSON(e.code));
-  });
+  .then(() => sendJSON(res, 205, { message: 'to-do list deleted' }))
+  .catch(sendError(res));
 });
 
 /*****************************/
@@ -92,17 +79,10 @@ router.post('/:id(\\d+)/item', (req, res, next) => {
   if (title) {
     apiTodoItem
     .create(req.user, req.params.id, title)
-    .then(item => {
-      res.status(201).type('application/json').send(apiTodoItem.toJSON(item));
-    })
-    .catch(e => {
-      res.status(e.status).type('application/json').send(error.toJSON(e.code));
-    });
+    .then(item => sendJSON(res, 201, apiTodoItem.toJSON(item)))
+    .catch(sendError(res));
   } else {
-    res
-    .status(400)
-    .type('application/json')
-    .send(error.toJSON(error.code.E_ARGMISSING));
+    sendError(res)(400, error.code.E_ARGMISSING);
   }
 });
 

@@ -59,17 +59,11 @@
     // GET /user
     /**
      * Retrieve user information from the server.
-     * @param {(user: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, user: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getUserInfo: function (onComplete, onError) {
-      this._ajax('get', '/user', null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/user', null, onComplete, onError);
     },
 
     // PUT /user
@@ -81,8 +75,8 @@
      * Sign in to the service with the given credential.
      * @param {string} email E-mail address of the user
      * @param {string} auth Password of the user
-     * @param {(user: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, user: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     signIn: function (email, auth, onComplete, onError) {
       var that = this;
@@ -92,24 +86,19 @@
             auth: auth
           }, function (status, response) {
             localStorage.plannerUserToken = response.token;
-            that.getUserInfo(
-              function (user) { onComplete(user); },
-              function (reason) { onError(reason); }
-            );
-          }, function (status, reason) {
-            onError(reason);
-          }
+            that.getUserInfo(onComplete, onError);
+          }, onError
         );
       };
 
       if (localStorage.plannerUserToken) {
-        this.getUserInfo(function (user) {
-          onError({
+        this.getUserInfo(function (status, user) {
+          onError(undefined, {
             error: { message: 'already signed in as ' + user.email }
           });
-        }, function(_) {
+        }, function(status, reason) {
           doSignIn();
-        })
+        });
       } else {
         doSignIn();
       }
@@ -118,17 +107,11 @@
     // GET /planner
     /**
      * Retrieve all planners owned by the current user.
-     * @param {(planners: object[]) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, planners: object[]) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getAllPlanners: function (onComplete, onError) {
-      this._ajax('get', '/planner', null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/planner', null, onComplete, onError);
     },
 
     // POST /planner
@@ -137,17 +120,11 @@
     /**
      * Retrieve information of selected planner.
      * @param {number} plannerId
-     * @param {(planner: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, planner: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getPlanner: function (plannerId, onComplete, onError) {
-      this._ajax('get', '/planner/' + plannerId, null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/planner/' + plannerId, null, onComplete, onError);
     },
 
     // PUT /planner/:id
@@ -162,17 +139,14 @@
      * Retrieve schedules associated with the selected planner.
      * @param {number} plannerId
      * @param {number[]} range Filter the returned list by starting date.
-     * @param {(schedules: object[]) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, schedules: object[]) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getSchedules: function (plannerId, range, onComplete, onError) {
       var path = range.join('/');
-      this._ajax('get', '/planner/' + plannerId + '/schedule/' + path, null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
+      this._ajax(
+        'get', '/planner/' + plannerId + '/schedule/' + path, null,
+        onComplete, onError
       );
     },
 
@@ -182,17 +156,11 @@
     /**
      * Retrieve information of the selected schedule.
      * @param {number} scheduleId
-     * @param {(schedule: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, schedule: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getSchedule: function (scheduleId, onComplete, onError) {
-      this._ajax('get', '/schedule/' + scheduleId, null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/schedule/' + scheduleId, null, onComplete, onError);
     },
 
     // PUT /schedule/:id
@@ -203,16 +171,13 @@
     /**
      * Retrieve a list of all to-do lists associated with the selected planner.
      * @param {number} plannerId
-     * @param {(todoLists: object[]) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, todoLists: object[]) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getAllTodoLists: function (plannerId, onComplete, onError) {
-      this._ajax('get', '/planner/' + plannerId + '/todo-list', null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
+      this._ajax(
+        'get', '/planner/' + plannerId + '/todo-list', null,
+        onComplete, onError
       );
     },
 
@@ -222,17 +187,11 @@
     /**
      * Retrieve information of the selected to-do list.
      * @param {number} listId
-     * @param {(list: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, list: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getTodoList: function (listId, onComplete, onError) {
-      this._ajax('get', '/todo-list/' + listId, null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/todo-list/' + listId, null, onComplete, onError);
     },
 
     // PUT /todo-list/:id
@@ -245,17 +204,11 @@
     /**
      * Retrieve information of the selected to-do list item.
      * @param {number} itemId
-     * @param {(item: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, item: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getTodoListItem: function (itemId, onComplete, onError) {
-      this._ajax('get', '/todo-item/' + itemId, null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/todo-item/' + itemId, null, onComplete, onError);
     },
 
     // PUT /todo-item/:id
@@ -265,17 +218,11 @@
     // GET /label
     /**
      * Retrieve a list of all labels owned by the currente user.
-     * @param {(labels: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, labels: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getAllLabels: function (onComplete, onError) {
-      this._ajax('get', '/label', null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/label', null, onComplete, onError);
     },
 
     // POST /label
@@ -284,17 +231,11 @@
     /**
      * Retrieve information of the selected label.
      * @param {number} labelId
-     * @param {(label: object) => void} onComplete
-     * @param {(reason: object) => void} onError
+     * @param {(status: number, label: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
      */
     getLabel: function (labelId, onComplete, onError) {
-      this._ajax('get', '/label/' + labelId, null,
-        function (status, response) {
-          onComplete(response);
-        }, function (status, reason) {
-          onError(reason);
-        }
-      );
+      this._ajax('get', '/label/' + labelId, null, onComplete, onError);
     },
 
     // PUT /label/:id

@@ -69,6 +69,23 @@
     // PUT /user
 
     // DELETE /user
+    /**
+     * Delete the current user account.
+     * @param {{email: string, auth: string}} args
+     * @param {(status: number, response: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    deleteUser: function (args, onComplete, onError) {
+      if (!args
+          || !args.email || !args.email.trim()
+          || !args.auth || !args.auth.trim()) {
+        onError(undefined, {
+          error: {
+            message: 'you must provide both the email address and the password'
+          }
+        });
+      }
+    },
 
     // POST /usr/authenticate
     /**
@@ -130,6 +147,22 @@
     // PUT /planner/:id
 
     // DELETE /planner/:id
+    /**
+     * Deletes the specified planner.
+     * @param {number} plannerId
+     * @param {{title: string}} args
+     * @param {(status: number, response: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    deletePlanner: function (plannerId, args, onComplete, onError) {
+      if (!args || !args.title || !args.title.trim()) {
+        onError(undefined, {
+          error: { message: 'title cannot be empty' }
+        });
+        return;
+      }
+      this._ajax('delete', '/planner/' + plannerId, args, onComplete, onError);
+    },
 
     // GET /planner/:id/schedule
     // GET /planner/:id/schedule/:year
@@ -166,6 +199,15 @@
     // PUT /schedule/:id
 
     // DELETE /schedule/:id
+    /**
+     * Delete the specified schedule.
+     * @param {number} id
+     * @param {(status: number, response: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    deleteSchedule: function (id, onComplete, onError) {
+      this._ajax('delete', '/schedule/' + id, null, onComplete, onError);
+    },
 
     // GET /planner/:id/todo-list
     /**
@@ -197,6 +239,15 @@
     // PUT /todo-list/:id
 
     // DELETE /todo-list/:id
+    /**
+     * Delete the specified to-do list.
+     * @param {number} id
+     * @param {(status: number, response: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    deletetodoList: function (listId, onComplete, onError) {
+      this._ajax('delete', '/todo-list/' + listId, null, onComplete, onError);
+    },
 
     // POST /todo-list/:id/item
 
@@ -214,6 +265,15 @@
     // PUT /todo-item/:id
 
     // DELETE /todo-item/:id
+    /**
+     * Delete the specified to-do list item.
+     * @param {number} itemId
+     * @param {(status: number, response: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    deleteTodoListItem: function (itemId, onComplete, onError) {
+      this._ajax('delete', '/todo-item/' + itemId, null, onComplete, onError);
+    },
 
     // GET /label
     /**
@@ -241,6 +301,15 @@
     // PUT /label/:id
 
     // DELETE /label/:id
+    /**
+     * Delete the specified label.
+     * @param {number} labelId
+     * @param {(status: number, response: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    deleteLabel: function (labelId, onComplete, onError) {
+      this._ajax('delete', '/label/' + labelId, null, onComplete, onError);
+    }
   };
 
   win.plannerClientLib = {

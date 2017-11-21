@@ -20,9 +20,13 @@
       var xhr = new XMLHttpRequest();
       xhr.onload = function (e) {
         if (this.status >= 200 && this.status < 300) {
-          onComplete(this.status, JSON.parse(this.responseText));
+          if (onComplete) {
+            onComplete(this.status, JSON.parse(this.responseText));
+          }
         } else {
-          onError(this.status, JSON.parse(this.responseText));
+          if (onError) {
+            onError(this.status, JSON.parse(this.responseText));
+          }
         }
       };
       xhr.onerror = function (e) {

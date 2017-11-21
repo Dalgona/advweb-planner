@@ -2,10 +2,60 @@
 <html>
   <head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
+    <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/assets/js/script.js"></script>
+    <link rel="stylesheet" href="/assets/css/layout.css">
+    <link rel="stylesheet" href="/assets/css/ui.css">
   </head>
   <body>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <div class="app">
+      <!-- Mock app header -->
+      <header>
+        <div>
+          <span>Web Planner</span>
+        </div>
+        <div>
+          <span>Please sign in.</span>
+        </div>
+      </header>
+      <!-- Sign-in form -->
+      <main>
+        <div id="signin-form" class="modal">
+          <div class="top-tabs">
+            <div class="tab active">Sign in</div>
+            <div class="tab">New Account</div>
+          </div>
+          <div class="contents">
+            <form>
+              <div class="form-item">
+                <input type="text" placeholder="E-mail Address">
+              </div>
+              <div class="form-item for-signup">
+                <input type="text" placeholder="Full Name">
+              </div>
+              <div class="form-item">
+                <input type="password" placeholder="Password">
+              </div>
+              <div class="form-item for-signup">
+                <input type="password" placeholder="Confirm Password">
+              </div>
+              <div class="form-item for-signin">
+                <button class="tinted">Sign in</button>
+              </div>
+              <div class="form-item for-signup">
+                <button class="tinted">Create Account</button>
+              </div>
+            </form>
+            <div class="form-item for-signup small dim">
+              By creating a new account, you agree to our terms of service and privacy policy.
+            </div>
+            <div class="form-item for-signin small" style="text-align: center;">
+              Terms of Service<br>
+              Privacy Policy
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
   </body>
 </html>

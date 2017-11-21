@@ -1,0 +1,56 @@
+html {
+  height: 100vh;
+  font-size: 12pt;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', 'NanumGothic', 'Malgun Gothic', sans-serif;
+  background: url('../images/bg_noise.png') repeat, linear-gradient(to bottom, #17191b, #31363b);
+}
+
+body {
+  margin: 0;
+}
+
+.app {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  height: 100vh;
+}
+
+.app > header {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-justify-content: space-between;
+  justify-content: space-between;
+  width: 100%;
+  color: silver;
+  font-weight: bold;
+}
+
+.app > header div {
+  padding: 1rem 1.2rem;
+}
+
+.app > main {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+/****************/
+/* SIGN-IN FORM */
+/****************/
+
+#signin-form {
+  width: 20rem;
+}
+
+#signin-form input,
+#signin-form button {
+  width: 100%;
+}

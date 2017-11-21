@@ -290,6 +290,21 @@
     },
 
     // POST /label
+    /**
+     * Create a new label.
+     * @param {{title: string, color: string}} args
+     * @param {(status: number, newLabel: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    createLabel: function (args, onComplete, onError) {
+      if (!args || !args.title || !args.title.trim()) {
+        onError(undefined, {
+          error: { message: 'title cannot be left empty' }
+        });
+        return;
+      }
+      this._ajax('post', '/label', args, onComplete, onError);
+    },
 
     // GET /label/:id
     /**

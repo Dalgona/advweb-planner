@@ -111,9 +111,9 @@ This API **REQUIRES** a user token.
 
 Content-type: `application/x-www-form-urlencoded`
 
-| name  | type   | description                               | required? |
-|-------|--------|-------------------------------------------|-----------|
-| title | string | New title of the planner for confirmation | yes       |
+| name  | type   | description                           | required? |
+|-------|--------|---------------------------------------|-----------|
+| title | string | title of the planner for confirmation | yes       |
 
 ### Response
 

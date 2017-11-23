@@ -22,8 +22,12 @@ body {
   display: flex;
   -webkit-justify-content: space-between;
   justify-content: space-between;
-  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
   color: silver;
+  background: linear-gradient(to bottom, black, transparent);
   font-weight: bold;
 }
 
@@ -40,6 +44,8 @@ body {
   justify-content: center;
   -webkit-flex: 1;
   flex: 1;
+  padding-top: 3.5rem;
+  overflow-y: auto;
 }
 
 /****************/

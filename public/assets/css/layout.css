@@ -54,3 +54,93 @@ body {
 #signin-form button {
   width: 100%;
 }
+
+/****************/
+/* PLANNER LIST */
+/****************/
+
+#planner-list {
+  width: 700px;
+  height: 100%;
+}
+
+#planner-list header h1 {
+  color: silver;
+  font-weight: bold;
+}
+
+#planner-list .list {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-wrap: wrap;
+  flex-wrap: wrap;
+}
+
+#planner-list .list .item,
+#planner-list .list .add-new {
+  display: inline-block;
+  margin: 5px;
+  box-sizing: border-box;
+  width: 165px;
+  height: 140px;
+  border-radius: 0.5rem;
+  cursor: pointer;
+}
+
+#planner-list .list .item {
+  padding: 1rem 0.75rem 0.5rem 0.75rem;
+  background-color: whitesmoke;
+  color: #333;
+  font-weight: bold;
+  box-shadow: 0 0 0 transparent;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+#planner-list .list .item:nth-child(5n+1) {
+  background-image: linear-gradient(to bottom, #f80 -25%, transparent 25%);
+}
+
+#planner-list .list .item:nth-child(5n+2) {
+  background-image: linear-gradient(to bottom, #cf0 -25%, transparent 25%);
+}
+
+#planner-list .list .item:nth-child(5n+3) {
+  background-image: linear-gradient(to bottom, #0f8 -25%, transparent 25%);
+}
+
+#planner-list .list .item:nth-child(5n+4) {
+  background-image: linear-gradient(to bottom, #08f -25%, transparent 25%);
+}
+
+#planner-list .list .item:nth-child(5n) {
+  background-image: linear-gradient(to bottom, #c0f -25%, transparent 25%);
+}
+
+#planner-list .list .item:hover {
+  transform: translate(0, -3px);
+  box-shadow: 0 3px 20px black;
+}
+
+#planner-list .list .item:active {
+  transform: translate(0, 0);
+  box-shadow: 0 1px 5px black;
+}
+
+#planner-list .list .add-new {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  background-color: transparent;
+  color: gray;
+  border: 2px dashed gray;
+  transition: background-color 0.3s;
+}
+
+#planner-list .list .add-new:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+#planner-list .list .add-new:active {
+  background-color: rgba(255, 255, 255, 0.05);
+}

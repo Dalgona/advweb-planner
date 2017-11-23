@@ -173,10 +173,56 @@
     this.updateUI();
   }
 
+  function PlannerList(baseElement) {
+    this.element = baseElement;
+    this.addNewClicked = null;
+    this.itemClicked = null;
+    this.planners = [];
+
+    var that = this;
+    var listElement = this.element.getElementsByClassName('list')[0];
+    var addNewButton = this.element.getElementsByClassName('add-new')[0];
+
+    addNewButton.addEventListener('click', (function (e) {
+      if (!this.addNewClicked) {
+        console.warn('[PlannerList] Please assign appropriate event handler to `addNewClicked`.');
+      } else {
+        this.addNewClicked.call(this);
+      }
+    }).bind(this), false);
+
+    this.updateUI = function () {
+      listElement.innerHTML = '';
+      for (var i = 0; i < this.planners.length; i++) {
+        listElement.appendChild(createItemElement(this.planners[i]));
+      }
+      listElement.appendChild(addNewButton);
+    };
+
+    function createItemElement(planner) {
+      var e = document.createElement('div');
+      e.className = 'item';
+      e.textContent = planner.title;
+      e.setAttribute('data-planner-id', planner.id);
+      e.addEventListener('click', function (e) {
+        if (!that.itemClicked) {
+          console.warn('[PlannerList] Please assign appropriate event handler to `itemClicked`.');
+        } else {
+          that.itemClicked.call(that, planner);
+        }
+      }, false);
+      return e;
+    }
+
+    this.updateUI();
+  }
+
   win.onload = function (e) {
     win.app = {};
     var signInForm = new SignInForm(document.getElementById('signin-form'));
+    var plannerList = new PlannerList(document.getElementById('planner-list'));
 
     win.app.signInForm = signInForm;
+    win.app.plannerList = plannerList;
   }
 })(window);

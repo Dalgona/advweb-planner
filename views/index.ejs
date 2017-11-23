@@ -26,24 +26,23 @@
             <div class="tab">New Account</div>
           </div>
           <div class="contents">
-            <form>
-              <div class="form-item">
-                <input type="text" placeholder="E-mail Address">
-              </div>
-              <div class="form-item for-signup">
-                <input type="text" placeholder="Full Name">
+            <form method="POST">
+              <div class="error-message">
               </div>
               <div class="form-item">
-                <input type="password" placeholder="Password">
+                <input id="signin-email" name="email" type="text" placeholder="E-mail Address">
               </div>
               <div class="form-item for-signup">
-                <input type="password" placeholder="Confirm Password">
+                <input id="signin-fullname" name="fullName" type="text" placeholder="Full Name">
               </div>
-              <div class="form-item for-signin">
-                <button class="tinted">Sign in</button>
+              <div class="form-item">
+                <input id="signin-password" name="password" type="password" placeholder="Password">
               </div>
               <div class="form-item for-signup">
-                <button class="tinted">Create Account</button>
+                <input id="signin-confirm" name="passwordConfirm" type="password" placeholder="Confirm Password">
+              </div>
+              <div class="form-item">
+                <input id="signin-button" type="submit" class="tinted" value="Sign in"></button>
               </div>
             </form>
             <div class="form-item for-signup small dim">

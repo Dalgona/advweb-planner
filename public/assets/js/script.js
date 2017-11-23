@@ -217,12 +217,71 @@
     this.updateUI();
   }
 
+  function Client(serviceUrl) {
+    var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
+    var rootElement = document.getElementById('app-main');
+    var mainElement = rootElement.getElementsByTagName('main')[0];
+    var uiSection = {
+      signInForm: new SignInForm(document.getElementById('signin-form')),
+      plannerList: new PlannerList(document.getElementById('planner-list'))
+    };
+    var currentUI = null;
+
+    uiSection.signInForm.onHandover = function () {
+      this.reset();
+      this.updateUI();
+    }
+    uiSection.signInForm.submitClicked = function (email, fullName, password, confirm) {
+      core.signIn(email, password, (function (s, user) {
+        doSignIn(user);
+      }).bind(this), (function (s, e) {
+        this.setError(e.error.message);
+      }).bind(this));
+    };
+    uiSection.plannerList.onHandover = function () {
+      core.getAllPlanners(
+        (function (s, list) {
+          this.planners = list;
+          this.updateUI();
+        }).bind(this),
+        null
+      );
+    };
+
+    if (localStorage.plannerUserToken) {
+      core.getUserInfo(
+        function (s, user) { doSignIn(user); },
+        function (s, e) { uiHandover(uiSection.signInForm); }
+      );
+    } else {
+      uiHandover(uiSection.signInForm);
+    }
+
+    function doSignIn(user) {
+      document.getElementById('user-settings').textContent = user.fullName;
+      uiHandover(uiSection.plannerList);
+    }
+
+    function uiHandover(newUI) {
+      currentUI = newUI;
+      mainElement.style.opacity = '0';
+      setTimeout(function () {
+        mainElement.innerHTML = '';
+        if (currentUI && currentUI.element) {
+          if (currentUI.onHandover) {
+            currentUI.onHandover.call(currentUI);
+          }
+          mainElement.appendChild(currentUI.element);
+        }
+        mainElement.style.opacity = '1';
+      }, 600);
+    }
+  }
+
   win.onload = function (e) {
     win.app = {};
-    var signInForm = new SignInForm(document.getElementById('signin-form'));
-    var plannerList = new PlannerList(document.getElementById('planner-list'));
-
-    win.app.signInForm = signInForm;
-    win.app.plannerList = plannerList;
+    var client = new Client('http://localhost:3000/api');
+    //var signInForm = new SignInForm(document.getElementById('signin-form'));
+    //var plannerList = new PlannerList(document.getElementById('planner-list'));
   }
 })(window);

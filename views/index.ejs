@@ -3,23 +3,24 @@
   <head>
     <title><%= title %></title>
     <script src="https://code.jquery.com/jquery-3.2.1.min.js"></script>
+    <script src="/assets/js/planner-client.js"></script>
     <script src="/assets/js/script.js"></script>
     <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="/assets/css/ui.css">
   </head>
   <body>
-    <div class="app">
-      <!-- Mock app header -->
+    <div id="app-main" class="app">
+      <!-- App header -->
       <header>
         <div>
           <span>Web Planner</span>
         </div>
         <div>
-          <span>Please sign in.</span>
+          <span id="user-settings">Please sign in</span>
         </div>
       </header>
-      <!-- Sign-in form -->
-      <main>
+      <main style="opacity: 0">
+        <!-- Sign-in form -->
         <div id="signin-form" class="modal">
           <div class="top-tabs">
             <div class="tab active">Sign in</div>

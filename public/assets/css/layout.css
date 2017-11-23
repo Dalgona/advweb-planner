@@ -46,6 +46,7 @@ body {
   flex: 1;
   padding-top: 3.5rem;
   overflow-y: auto;
+  transition: opacity 0.5s;
 }
 
 /****************/

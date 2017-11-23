@@ -6,9 +6,25 @@
   opacity: 0.6;
 }
 
+.app div.error-message {
+  margin-bottom: 0.25rem;
+  font-size: 0.8em;
+  color: #a31c00;
+}
+
 .app div.form-item {
   margin-bottom: 0.25rem;
   transition: height 0.3s, margin-bottom 0.3s, opacity 0.3s ease-out;
+}
+
+.app div.form-item.anim {
+  overflow-y: hidden;
+}
+
+.app div.form-item.hidden {
+  margin-bottom: 0;
+  height: 0 !important;
+  opacity: 0;
   overflow-y: hidden;
 }
 
@@ -110,7 +126,9 @@
   background-color: #5bc5bf;
 }
 
-.app button {
+.app button,
+.app input[type=submit],
+.app input[type=reset] {
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', 'NanumGothic', 'Malgun Gothic', sans-serif;
   font-size: 1rem;
   font-weight: bold;
@@ -125,27 +143,53 @@
   transition: transform 0.3s, box-shadow 0.3s;
 }
 
-.app button.tinted {
+.app button.tinted,
+.app input[type=submit].tinted,
+.app input[type=reset].tinted {
   border-color: #5bc5bf;
   background: linear-gradient(to bottom, #cef5f3, #7ee6e0);
   color: #265250;
 }
 
-.app button.red {
+.app button.red,
+.app input[type=submit].red,
+.app input[type=reset].red {
   border-color: #a31c00;
   background: linear-gradient(to bottom, #e6b8ae, #c56d5b);
   color: white;
   text-shadow: 0 -1px 0 #a31c00;
 }
 
-.app button:hover {
+.app button:hover,
+.app input[type=submit]:hover,
+.app input[type=reset]:hover {
   transform: translate(0, -2px);
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
 }
 
-.app button:active {
+.app button:active,
+.app input[type=submit]:active,
+.app input[type=reset]:active {
   transform: translate(0, 0);
   box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+.app button:disabled,
+.app input[type=submit]:disabled,
+.app input[type=reset]:disabled {
+  background: silver;
+  color: white;
+  font-weight: normal;
+  text-shadow: none;
+  border: none;
+  cursor: not-allowed;
+}
+
+.app button:disabled:hover,
+.app input[type=submit]:disabled:hover,
+.app input[type=reset]:disabled:hover {
+  transform: none;
+  box-shadow: none;
 }
 
 .app .modal {

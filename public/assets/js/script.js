@@ -322,36 +322,6 @@
     };
     var currentUI = null;
 
-    uiSection.signInForm.onHandover = function () {
-      this.reset();
-      this.updateUI();
-    }
-    uiSection.signInForm.submitClicked = function (email, fullName, password, confirm) {
-      core.signIn(email, password, (function (s, user) {
-        doSignIn(user);
-      }).bind(this), (function (s, e) {
-        this.setError(e.error.message);
-      }).bind(this));
-    };
-    uiSection.plannerList.onHandover = function () {
-      core.getAllPlanners(
-        (function (s, list) {
-          this.planners = list;
-          this.updateUI();
-        }).bind(this),
-        null
-      );
-    };
-
-    if (localStorage.plannerUserToken) {
-      core.getUserInfo(
-        function (s, user) { doSignIn(user); },
-        function (s, e) { uiHandover(uiSection.signInForm); }
-      );
-    } else {
-      uiHandover(uiSection.signInForm);
-    }
-
     function doSignIn(user) {
       document.getElementById('user-settings').textContent = user.fullName;
       uiHandover(uiSection.plannerList);
@@ -370,6 +340,44 @@
         }
         mainElement.style.opacity = '1';
       }, 600);
+    }
+
+    uiSection.signInForm.onHandover = function () {
+      this.reset();
+      this.updateUI();
+    }
+    uiSection.signInForm.submitClicked = function (email, fullName, password, confirm) {
+      switch (this.mode) {
+        case 0: // sign-in
+          core.signIn(email, password, (function (s, user) {
+            doSignIn(user);
+          }).bind(this), (function (s, e) {
+            this.setError(e.error.message);
+          }).bind(this));
+          break;
+
+        case 1: // create account
+          this.setError('not implemented');
+          break;
+      }
+    };
+    uiSection.plannerList.onHandover = function () {
+      core.getAllPlanners(
+        (function (s, list) {
+          this.planners = list;
+          this.updateUI();
+        }).bind(this),
+        null
+      );
+    };
+
+    if (localStorage.plannerUserToken) {
+      core.getUserInfo(
+        function (s, user) { doSignIn(user); },
+        function (s, e) { uiHandover(uiSection.signInForm); }
+      );
+    } else {
+      uiHandover(uiSection.signInForm);
     }
   }
 

@@ -151,3 +151,35 @@ body {
 #planner-list .list .add-new:active {
   background-color: rgba(255, 255, 255, 0.05);
 }
+
+/****************/
+/* DATE SPINNER */
+/****************/
+
+#planner-date-spinner {
+  display: -webkit-flex;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  color: #333;
+}
+
+#planner-date-spinner .spin-btn {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+}
+
+#planner-date-spinner .date-display {
+  -webkit-flex: 1;
+  flex: 1;
+  text-align: center;
+}
+
+#planner-date-spinner .date-display .big {
+  font-weight: bold;
+  font-size: 2.5em;
+}
+
+#planner-date-spinner .date-display .detail {
+  margin-left: 0.5em;
+}

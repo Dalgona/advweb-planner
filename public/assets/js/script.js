@@ -217,6 +217,101 @@
     this.updateUI();
   }
 
+  function DateSpinner(baseElement) {
+    this.element = baseElement;
+    this.baseDate = new Date();
+    this.prevClicked = null;
+    this.nextClicked = null;
+
+    var mode = 0; // 0: monthly, 1: weekly, 2: daily
+    var date = new Date();
+    var prevBtn = this.element.getElementsByClassName('prev')[0];
+    var nextBtn = this.element.getElementsByClassName('next')[0];
+    var bigText = this.element.getElementsByClassName('big')[0];
+    var detailText = this.element.getElementsByClassName('detail')[0];
+
+    prevBtn.onclick = (function (e) {
+      switch (mode) {
+        case 0:
+          date.setMonth(date.getMonth() - 1, 1);
+          break;
+        case 1:
+          date.setDate(date.getDate() - 7);
+          break;
+        case 2:
+          date.setDate(date.getDate() - 1);
+          break;
+      }
+      this.updateUI();
+      if (this.prevClicked) {
+        this.prevClicked(mode, date);
+      }
+    }).bind(this);
+
+    nextBtn.onclick = (function (e) {
+      switch (mode) {
+        case 0:
+          date.setMonth(date.getMonth() + 1, 1);
+          break;
+        case 1:
+          date.setDate(date.getDate() + 7);
+          break;
+        case 2:
+          date.setDate(date.getDate() + 1);
+          break;
+      }
+      this.updateUI();
+      if (this.nextClicked) {
+        this.nextClicked(mode, date);
+      }
+    }).bind(this);
+
+    this.getDate = function () {
+      return date;
+    }
+
+    this.getMode = function () {
+      return mode;
+    }
+
+    this.setMode = function (newMode) {
+      mode = newMode;
+      switch (mode) {
+        case 0:
+          date.setDate(1);
+          break;
+        case 1:
+          date.setDate(date.getDate() - date.getDay());
+          break;
+        case 2:
+          // NOP
+          break;
+      }
+      this.updateUI();
+    };
+
+    this.updateUI = function () {
+      switch (mode) {
+        case 0:
+          bigText.textContent = date.getMonth() + 1;
+          detailText.textContent = date.getFullYear();
+          break;
+        case 1:
+          var tempDate = new Date(date);
+          tempDate.setDate(date.getDate() + 6);
+          bigText.textContent = date.getDate() + '~' + tempDate.getDate();
+          detailText.textContent = date.getFullYear() + '-' + (date.getMonth() + 1);
+          break;
+        case 2:
+          bigText.textContent = date.getDate();
+          detailText.textContent = date.getFullYear() + '-' + (date.getMonth() + 1);
+          break;
+      }
+    };
+
+    this.setMode(0);
+  }
+
   function Client(serviceUrl) {
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
     var rootElement = document.getElementById('app-main');

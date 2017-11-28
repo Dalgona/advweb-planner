@@ -153,6 +153,139 @@ body {
 }
 
 /****************/
+/* PLANNER VIEW */
+/****************/
+
+#planner-view {
+  box-sizing: border-box;
+  width: calc(90%);
+  height: calc(100% - 2rem);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  background-color: gray;
+  box-shadow: inset -1px -1px 1px rgba(0, 0, 0, 0.5);
+}
+
+#planner-view .border {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: stretch;
+  align-items: stretch;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  padding: 0.5rem;
+  border: 1px dashed rgba(0, 0, 0, 0.5);
+  border-radius: 0.5rem;
+}
+
+#planner-view .border > div {
+  -webkit-flex: 1;
+  flex: 1;
+  position: relative;
+}
+
+#planner-view .border .left {
+  padding-left: 1rem;
+}
+
+#planner-view .border .right {
+  padding-right: 1rem;
+}
+
+#planner-view .border .paper {
+  background-color: whitesmoke;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5), 0 3px 20px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+}
+
+#planner-view .left .paper {
+  padding: 1rem 2.5rem 1rem 1rem;
+  border-top-left-radius: 0.25rem;
+  border-bottom-left-radius: 0.25rem;
+  background-image: linear-gradient(
+    to left, gray, silver 3%, transparent 8%);
+}
+
+#planner-view .right .paper {
+  padding: 1rem 1rem 1rem 2.5rem;
+  border-top-right-radius: 0.25rem;
+  border-bottom-right-radius: 0.25rem;
+  background-image: linear-gradient(
+    to right, gray, silver 3%, transparent 8%);
+}
+
+#planner-view .contents {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-flex-direction: column;
+  flex-direction: column;
+  height: 100%;
+}
+
+#planner-view .contents > header {
+  box-sizing: border-box;
+  padding: 0.25rem;
+  height: 5rem;
+}
+
+#planner-view .contents > div {
+  -webkit-flex: 1;
+  flex: 1;
+  padding: 0.25rem;
+}
+
+#planner-view .contents table {
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  border-collapse: collapse;
+}
+
+#planner-view .contents table th,
+#planner-view .contents table td {
+  box-sizing: border-box;
+  width: 25%;
+}
+
+#planner-view .contents table th {
+  height: 2.25rem;
+  color: white;
+  background-color: gray;
+  border: 1px solid white;
+}
+
+#planner-view .contents table tbody {
+  height: calc(100% - 2.25rem);
+}
+
+#planner-view .contents table td {
+  position: relative;
+  border: 1px solid silver;
+}
+
+#planner-view .right .contents table tr th:last-child,
+#planner-view .right .contents table tr td:last-child {
+  visibility: hidden;
+  pointer-events: none;
+  border: none;
+  background: none;
+}
+
+#planner-view .contents table td div {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 0.25rem;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  overflow-y: auto;
+}
+
+/****************/
 /* DATE SPINNER */
 /****************/
 

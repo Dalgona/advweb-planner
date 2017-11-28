@@ -312,13 +312,129 @@
     this.setMode(0);
   }
 
+  function PlannerView(baseElement, clientCore) {
+    this.element = baseElement;
+
+    var mode = 0;
+    var spinner = new DateSpinner(document.getElementById('planner-date-spinner'));
+    var leftContents = this.element.getElementsByClassName('contents')[0];
+    var rightContents = this.element.getElementsByClassName('contents')[1];
+    var leftTable = document.createElement('table');
+    var rightTable = document.createElement('table');
+    var modeButtons = this.element.getElementsByClassName('mode-btn');
+    var planner = null;
+    var schedules = [];
+
+    leftContents.getElementsByTagName('header')[0].appendChild(spinner.element);
+    for (var i = 0; i < modeButtons.length; i++) {
+      (function (x) {
+        modeButtons[x].onclick = (function (e) {
+          this.setMode(x);
+        }).bind(this);
+      }).call(this, i);
+    }
+    leftContents.getElementsByClassName('table-container')[0].appendChild(leftTable);
+    rightContents.getElementsByClassName('table-container')[0].appendChild(rightTable);
+
+    spinner.prevClicked = (function (mode, date) {
+      this.updateUI();
+    }).bind(this);
+    spinner.nextClicked = (function (mode, date) {
+      this.updateUI();
+    }).bind(this);
+
+    function buildTableContents(side) {
+      var tblMarkup = '';
+      var header;
+      switch (side) {
+        case 'left':
+          header = '<thead><tr><th>Sun</th><th>Mon</th><th>Tue</th><th>Wed</th></tr></thead>';
+          break;
+        default:
+          header = '<thead><tr><th>Thu</th><th>Fri</th><th>Sat</th><th>&nbsp;</th></tr></thead>';
+          break;
+      }
+      tblMarkup += header + '<tbody class="small">';
+      var row = '<tr><td><div></div></td><td><div></div></td><td><div></div></td><td><div></div></td></tr>';
+      switch (mode) {
+        case 0:
+          for (var i = 0; i < 6; i++) { tblMarkup += row; }
+          break;
+        case 1:
+          tblMarkup += row;
+          break;
+      }
+      tblMarkup += '</tbody>';
+      return tblMarkup;
+    }
+
+    function getTableCell(row, col) {
+      var tbl = col < 4 ? leftTable : rightTable;
+      var subCol = col % 4;
+      var row = tbl.getElementsByTagName('tbody')[0].getElementsByTagName('tr')[row];
+      return row.getElementsByTagName('td')[subCol].getElementsByTagName('div')[0];
+    }
+
+    this.setMode = function (newMode) {
+      spinner.setMode(newMode);
+      mode = newMode;
+      this.updateUI();
+    };
+
+    this.setPlanner = function (newPlanner) {
+      planner = newPlanner;
+      this.updateUI();
+    }
+
+    this.updateUI = function () {
+      leftTable.innerHTML = buildTableContents('left');
+      rightTable.innerHTML = buildTableContents('right');
+      if (!clientCore || !planner) {
+        return;
+      }
+      clientCore.getSchedules(
+        planner.id,
+        [spinner.getDate().getFullYear(), spinner.getDate().getMonth() + 1],
+        function (s, response) {
+          switch (mode) {
+            case 0:
+              var tempDate = new Date(spinner.getDate());
+              tempDate.setMonth(tempDate.getMonth() + 1, 0);
+              var numOfDays = tempDate.getDate();
+              tempDate.setDate(1);
+              var cellIdx = tempDate.getDay();
+              for (var i = 1; i <= numOfDays; i++, cellIdx++) {
+                getTableCell(Math.floor(cellIdx / 7), cellIdx % 7).innerHTML += i + '<br>';
+              }
+              for (var i in response) {
+                var startDate = new Date(response[i].startsAt);
+                cellIdx = startDate.getDate() + tempDate.getDay() - 1;
+                getTableCell(Math.floor(cellIdx / 7), cellIdx % 7).innerHTML += response[i].title + '<br>';
+              }
+              break;
+            case 1:
+              var tempDate = new Date(spinner.getDate());
+              for (var i = 0; i < 7; i++, tempDate.setDate(tempDate.getDate() + 1)) {
+                getTableCell(0, i).innerHTML += tempDate.getDate() + '<br>';
+              }
+              break;
+          }
+        },
+        null
+      );
+    };
+
+    this.setMode(0);
+  }
+
   function Client(serviceUrl) {
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
     var rootElement = document.getElementById('app-main');
     var mainElement = rootElement.getElementsByTagName('main')[0];
     var uiSection = {
       signInForm: new SignInForm(document.getElementById('signin-form')),
-      plannerList: new PlannerList(document.getElementById('planner-list'))
+      plannerList: new PlannerList(document.getElementById('planner-list')),
+      plannerView: new PlannerView(document.getElementById('planner-view'), core)
     };
     var currentUI = null;
 
@@ -370,6 +486,13 @@
         null
       );
     };
+    uiSection.plannerList.itemClicked = function (selectedPlanner) {
+      uiSection.plannerView.setPlanner(selectedPlanner);
+      uiHandover(uiSection.plannerView);
+    };
+    uiSection.plannerView.onHandover = function () {
+      this.updateUI();
+    }
 
     if (localStorage.plannerUserToken) {
       core.getUserInfo(

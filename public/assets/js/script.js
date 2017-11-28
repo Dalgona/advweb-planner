@@ -18,12 +18,9 @@
       })(i);
     }
 
-    var heights = [];
     var formItems = this.element.getElementsByClassName('form-item');
     for (var i = 0; i < formItems.length; i++) {
-      var h = win.getComputedStyle(formItems[i]).height;
-      heights.push(h);
-      formItems[i].style.height = h;
+      formItems[i].style.height = '2.25rem';
       formItems[i].setAttribute('data-index', i);
     }
 
@@ -276,6 +273,7 @@
 
     this.setMode = function (newMode) {
       mode = newMode;
+      date = new Date();
       switch (mode) {
         case 0:
           date.setDate(1);

@@ -75,7 +75,7 @@
         acc = acc && !!inputFields[3].value;
       }
       return acc;
-    }
+    };
 
     /**
      * Checks if the values of two password fields match.
@@ -85,7 +85,7 @@
         return true;
       }
       return inputFields[2].value === inputFields[3].value;
-    }
+    };
 
     this.validate = function (setTo) {
       if (setTo !== undefined) {
@@ -114,7 +114,12 @@
         errorMsg.textContent = message;
         errorMsg.style.display = 'block';
       }
-    }
+    };
+
+    this.onHandover = function () {
+      this.reset();
+      this.updateUI();
+    };
 
     this.updateUI = function () {
       var elemForSignIn = this.element.getElementsByClassName('for-signin');
@@ -170,7 +175,7 @@
     this.updateUI();
   }
 
-  function PlannerList(baseElement) {
+  function PlannerList(baseElement, clientCore) {
     this.element = baseElement;
     this.addNewClicked = null;
     this.itemClicked = null;
@@ -194,6 +199,16 @@
         listElement.appendChild(createItemElement(this.planners[i]));
       }
       listElement.appendChild(addNewButton);
+    };
+
+    this.onHandover = function () {
+      clientCore.getAllPlanners(
+        (function (s, list) {
+          this.planners = list;
+          this.updateUI();
+        }).bind(this),
+        null
+      );
     };
 
     function createItemElement(planner) {
@@ -423,6 +438,10 @@
       );
     };
 
+    this.onHandover = function () {
+      this.updateUI();
+    };
+
     this.setMode(0);
   }
 
@@ -445,7 +464,7 @@
     var mainElement = rootElement.getElementsByTagName('main')[0];
     var uiSection = {
       signInForm: new SignInForm(document.getElementById('signin-form')),
-      plannerList: new PlannerList(document.getElementById('planner-list')),
+      plannerList: new PlannerList(document.getElementById('planner-list'), core),
       plannerView: new PlannerView(document.getElementById('planner-view'), core)
     };
     var currentUI = null;
@@ -470,10 +489,6 @@
       }, 600);
     }
 
-    uiSection.signInForm.onHandover = function () {
-      this.reset();
-      this.updateUI();
-    }
     uiSection.signInForm.submitClicked = function (email, fullName, password, confirm) {
       switch (this.mode) {
         case 0: // sign-in
@@ -489,22 +504,10 @@
           break;
       }
     };
-    uiSection.plannerList.onHandover = function () {
-      core.getAllPlanners(
-        (function (s, list) {
-          this.planners = list;
-          this.updateUI();
-        }).bind(this),
-        null
-      );
-    };
     uiSection.plannerList.itemClicked = function (selectedPlanner) {
       uiSection.plannerView.setPlanner(selectedPlanner);
       uiHandover(uiSection.plannerView);
     };
-    uiSection.plannerView.onHandover = function () {
-      this.updateUI();
-    }
 
     if (localStorage.plannerUserToken) {
       core.getUserInfo(

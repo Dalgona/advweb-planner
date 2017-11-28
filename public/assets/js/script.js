@@ -406,8 +406,9 @@
               }
               for (var i in response) {
                 var startDate = new Date(response[i].startsAt);
+                var listItem = new ScheduleListItem(response[i]);
                 cellIdx = startDate.getDate() + tempDate.getDay() - 1;
-                getTableCell(Math.floor(cellIdx / 7), cellIdx % 7).innerHTML += response[i].title + '<br>';
+                getTableCell(Math.floor(cellIdx / 7), cellIdx % 7).appendChild(listItem.element);
               }
               break;
             case 1:
@@ -423,6 +424,19 @@
     };
 
     this.setMode(0);
+  }
+
+  function ScheduleListItem(schedule) {
+    var schedule = schedule;
+    var e = document.createElement('div');
+    e.className = 'schedule-list-item';
+    var contents = '<div class="labels">';
+    for (var i in schedule.labels) {
+      contents += '<div class="label" style="background-color:' + schedule.labels[i].color + '"></div>';
+    }
+    contents += '</div>' + schedule.title;
+    e.innerHTML = contents;
+    this.element = e;
   }
 
   function Client(serviceUrl) {

@@ -274,7 +274,7 @@ body {
   background: none;
 }
 
-#planner-view .contents table td div {
+#planner-view .contents table td > div {
   position: absolute;
   top: 0;
   left: 0;
@@ -315,4 +315,36 @@ body {
 
 #planner-date-spinner .date-display .detail {
   margin-left: 0.5em;
+}
+
+/**********************/
+/* SCHEDULE LIST ITEM */
+/**********************/
+
+#planner-view .schedule-list-item {
+  display: block;
+  margin: 1px 0;
+  box-sizing: border-box;
+  width: 100%;
+  padding: 1px;
+  background-color: #eee;
+  border: 1px solid silver;
+  border-radius: 3px;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+#planner-view .schedule-list-item .labels {
+  display: inline-block;
+}
+
+#planner-view .schedule-list-item .labels div.label {
+  display: inline-block;
+  border-radius: 1px;
+  width: 3px;
+  height: 1em;
+  margin: 0 1px;
+  transform: translate(0, 1px);
 }

@@ -397,7 +397,11 @@
     this.setPlanner = function (newPlanner) {
       planner = newPlanner;
       this.updateUI();
-    }
+    };
+
+    this.scheduleItemClicked = function (schedule) {
+      console.log(schedule);
+    };
 
     this.updateUI = function () {
       leftTable.innerHTML = buildTableContents('left');
@@ -408,7 +412,7 @@
       clientCore.getSchedules(
         planner.id,
         [spinner.getDate().getFullYear(), spinner.getDate().getMonth() + 1],
-        function (s, response) {
+        (function (s, response) {
           switch (mode) {
             case 0:
               var tempDate = new Date(spinner.getDate());
@@ -421,7 +425,7 @@
               }
               for (var i in response) {
                 var startDate = new Date(response[i].startsAt);
-                var listItem = new ScheduleListItem(response[i]);
+                var listItem = new ScheduleListItem(this, response[i]);
                 cellIdx = startDate.getDate() + tempDate.getDay() - 1;
                 getTableCell(Math.floor(cellIdx / 7), cellIdx % 7).appendChild(listItem.element);
               }
@@ -433,7 +437,7 @@
               }
               break;
           }
-        },
+        }).bind(this),
         null
       );
     };
@@ -445,7 +449,7 @@
     this.setMode(0);
   }
 
-  function ScheduleListItem(schedule) {
+  function ScheduleListItem(host, schedule) {
     var schedule = schedule;
     var e = document.createElement('div');
     e.className = 'schedule-list-item';
@@ -455,6 +459,7 @@
     }
     contents += '</div>' + schedule.title;
     e.innerHTML = contents;
+    e.onclick = host.scheduleItemClicked.bind(host, schedule);
     this.element = e;
   }
 

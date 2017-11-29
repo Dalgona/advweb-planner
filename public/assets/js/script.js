@@ -346,6 +346,7 @@
         }).bind(this);
       }).call(this, i);
     }
+    leftTable.className = rightTable.className = 'calendar';
     leftContents.getElementsByClassName('table-container')[0].appendChild(leftTable);
     rightContents.getElementsByClassName('table-container')[0].appendChild(rightTable);
 

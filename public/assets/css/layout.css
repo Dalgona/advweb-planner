@@ -237,44 +237,44 @@ body {
   padding: 0.25rem;
 }
 
-#planner-view .contents table {
+#planner-view .contents table.calendar {
   box-sizing: border-box;
   width: 100%;
   height: 100%;
   border-collapse: collapse;
 }
 
-#planner-view .contents table th,
-#planner-view .contents table td {
+#planner-view .contents table.calendar th,
+#planner-view .contents table.calendar td {
   box-sizing: border-box;
   width: 25%;
 }
 
-#planner-view .contents table th {
+#planner-view .contents table.calendar th {
   height: 2.25rem;
   color: white;
   background-color: gray;
   border: 1px solid white;
 }
 
-#planner-view .contents table tbody {
+#planner-view .contents table.calendar tbody {
   height: calc(100% - 2.25rem);
 }
 
-#planner-view .contents table td {
+#planner-view .contents table.calendar td {
   position: relative;
   border: 1px solid silver;
 }
 
-#planner-view .right .contents table tr th:last-child,
-#planner-view .right .contents table tr td:last-child {
+#planner-view .right .contents table.calendar tr th:last-child,
+#planner-view .right .contents table.calendar tr td:last-child {
   visibility: hidden;
   pointer-events: none;
   border: none;
   background: none;
 }
 
-#planner-view .contents table td > div {
+#planner-view .contents table.calendar td > div {
   position: absolute;
   top: 0;
   left: 0;

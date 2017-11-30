@@ -438,14 +438,84 @@
     }
   }
 
+  function DateTimePicker(name) {
+    var that = this;
+    var elem = document.getElementById('template-datetime-picker').cloneNode(true);
+    var date = new Date();
+    this.element = elem;
+
+    date.setSeconds(0, 0);
+    elem.id = '';
+    var inputs = elem.getElementsByTagName('input');
+    var selects = elem.getElementsByTagName('select');
+    for (var i = 0; i < inputs.length; i++) {
+      inputs[i].name = 'name_' + inputs[i].name;
+    }
+    for (var i = 0; i < selects.length; i++) {
+      selects[i].name = 'name_' + selects[i].name;
+    }
+    for (var i = 0; i < 24; i++) {
+      var opt = new Option('' + i, '' + i);
+      selects[0].appendChild(opt);
+    }
+    for (var i = 0; i < 12; i++) {
+      var opt = new Option('' + (i * 5), '' + (i * 5));
+      selects[1].appendChild(opt);
+    }
+
+    inputs[0].onchange = function (e) {
+      date.setFullYear(this.value);
+      that.updateUI();
+    }
+    inputs[1].onchange = function (e) {
+      date.setMonth(this.value - 1);
+      that.updateUI();
+    }
+    inputs[2].onchange = function (e) {
+      date.setDate(this.value);
+      that.updateUI();
+    }
+    selects[0].onchange = function (e) {
+      date.setHours(this.value);
+      that.updateUI();
+    }
+    selects[1].onchange = function (e) {
+      date.setMinutes(this.value);
+      that.updateUI();
+    }
+
+    this.setDate = function (newDate) {
+      date = newDate;
+      this.updateUI();
+    }
+
+    this.getDate = function () {
+      return date;
+    }
+
+    this.updateUI = function () {
+      inputs[0].value = date.getFullYear();
+      inputs[1].value = date.getMonth() + 1;
+      inputs[2].value = date.getDate();
+      selects[0].value = date.getHours();
+      selects[1].value = (Math.floor(date.getMinutes() / 5)) * 5;
+    }
+
+    this.updateUI();
+  }
+
   function ScheduleDetailsView(host, schedule, clientCore) {
     var elem = document.getElementById('schedule-details').cloneNode(true);
     var form = elem.getElementsByTagName('form')[0];
+    var startPicker = new DateTimePicker('starts_at');
+    var endPicker = new DateTimePicker('ends_at');
     this.element = elem;
 
     form.title.value = schedule.title;
     form.location.value = schedule.location;
     form.description.value = schedule.description;
+    elem.getElementsByClassName('start-date-picker')[0].appendChild(startPicker.element);
+    elem.getElementsByClassName('end-date-picker')[0].appendChild(endPicker.element);
 
     form.onsubmit = function (e) {
       host.detailsClosing();
@@ -479,7 +549,6 @@
     };
 
     this.scheduleItemClicked = function (schedule) {
-      console.log(schedule);
       var view = new ScheduleDetailsView(this, schedule, clientCore);
       rightStack.push(view.element);
       this.updateUI();

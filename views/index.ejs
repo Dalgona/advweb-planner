@@ -109,11 +109,11 @@
                     </tr>
                     <tr>
                       <th>Starts at</th>
-                      <td>Not Implemented</td>
+                      <td class="start-date-picker"></td>
                     </tr>
                     <tr>
                       <th>Ends at</th>
-                      <td>Not Implemented</td>
+                      <td class="end-date-picker"></td>
                     </tr>
                     <tr>
                       <th>Labels</th>
@@ -144,6 +144,14 @@
             </div>
           </div>
         </div>
+        <!-- Date/Time Picker -->
+        <span id="template-datetime-picker">
+          <input name="year" type="number" min="0" max="9999"> /
+          <input name="month" type="number" min="1" max="12"> /
+          <input name="date" type="number" min="1" max="31">
+          <select name="hour"></select> :
+          <select name="minute"></select>
+        </span>
       </div>
     </div>
   </body>

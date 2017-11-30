@@ -438,6 +438,25 @@
     }
   }
 
+  function ScheduleDetailsView(host, schedule, clientCore) {
+    var elem = document.getElementById('schedule-details').cloneNode(true);
+    var form = elem.getElementsByTagName('form')[0];
+    this.element = elem;
+
+    form.title.value = schedule.title;
+    form.location.value = schedule.location;
+    form.description.value = schedule.description;
+
+    form.onsubmit = function (e) {
+      host.detailsClosing();
+      return false;
+    }
+
+    form.cancel.onclick = function (e) {
+      host.detailsClosing();
+    }
+  }
+
   function PlannerView(baseElement, clientCore) {
     this.element = baseElement;
 
@@ -461,7 +480,15 @@
 
     this.scheduleItemClicked = function (schedule) {
       console.log(schedule);
+      var view = new ScheduleDetailsView(this, schedule, clientCore);
+      rightStack.push(view.element);
+      this.updateUI();
     };
+
+    this.detailsClosing = function () {
+      rightStack.pop();
+      this.updateUI();
+    }
 
     this.updateUI = function () {
       calendar.updateUI();

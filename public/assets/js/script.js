@@ -325,37 +325,31 @@
     this.setMode(0);
   }
 
-  function PlannerView(baseElement, clientCore) {
-    this.element = baseElement;
-
+  function CalendarView(host, clientCore) {
+    /* TODO: add mode buttons on the right page */
     var mode = 0;
+    var template = document.getElementById('template-paper');
     var spinner = new DateSpinner(document.getElementById('planner-date-spinner'));
-    var leftContents = this.element.getElementsByClassName('contents')[0];
-    var rightContents = this.element.getElementsByClassName('contents')[1];
+    var left = template.cloneNode(true);
+    var right = template.cloneNode(true);
     var leftTable = document.createElement('table');
     var rightTable = document.createElement('table');
-    var modeButtons = this.element.getElementsByClassName('mode-btn');
     var planner = null;
-    var schedules = [];
 
-    leftContents.getElementsByTagName('header')[0].appendChild(spinner.element);
-    for (var i = 0; i < modeButtons.length; i++) {
-      (function (x) {
-        modeButtons[x].onclick = (function (e) {
-          this.setMode(x);
-        }).bind(this);
-      }).call(this, i);
-    }
-    leftTable.className = rightTable.className = 'calendar';
-    leftContents.getElementsByClassName('table-container')[0].appendChild(leftTable);
-    rightContents.getElementsByClassName('table-container')[0].appendChild(rightTable);
+    this.leftElement = left;
+    this.rightElement = right;
 
+    left.getElementsByTagName('header')[0].appendChild(spinner.element);
     spinner.prevClicked = (function (mode, date) {
       this.updateUI();
     }).bind(this);
     spinner.nextClicked = (function (mode, date) {
       this.updateUI();
     }).bind(this);
+
+    leftTable.className = rightTable.className = 'calendar';
+    left.getElementsByClassName('main')[0].appendChild(leftTable);
+    right.getElementsByClassName('main')[0].appendChild(rightTable);
 
     function buildTableContents(side) {
       var tblMarkup = '';
@@ -389,19 +383,19 @@
       return row.getElementsByTagName('td')[subCol].getElementsByTagName('div')[0];
     }
 
+    this.getMode = function () {
+      return mode;
+    }
+
     this.setMode = function (newMode) {
-      spinner.setMode(newMode);
       mode = newMode;
+      spinner.setMode(newMode);
       this.updateUI();
-    };
+    }
 
     this.setPlanner = function (newPlanner) {
       planner = newPlanner;
       this.updateUI();
-    };
-
-    this.scheduleItemClicked = function (schedule) {
-      console.log(schedule);
     };
 
     this.updateUI = function () {
@@ -413,7 +407,7 @@
       clientCore.getSchedules(
         planner.id,
         [spinner.getDate().getFullYear(), spinner.getDate().getMonth() + 1],
-        (function (s, response) {
+        function (s, response) {
           switch (mode) {
             case 0:
               var tempDate = new Date(spinner.getDate());
@@ -426,7 +420,7 @@
               }
               for (var i in response) {
                 var startDate = new Date(response[i].startsAt);
-                var listItem = new ScheduleListItem(this, response[i]);
+                var listItem = new ScheduleListItem(host, response[i]);
                 cellIdx = startDate.getDate() + tempDate.getDay() - 1;
                 getTableCell(Math.floor(cellIdx / 7), cellIdx % 7).appendChild(listItem.element);
               }
@@ -438,9 +432,43 @@
               }
               break;
           }
-        }).bind(this),
+        },
         null
       );
+    }
+  }
+
+  function PlannerView(baseElement, clientCore) {
+    this.element = baseElement;
+
+    var mode = 0;
+    var calendar = new CalendarView(this, clientCore);
+    var leftContainer = this.element.getElementsByClassName('left')[0];
+    var rightContainer = this.element.getElementsByClassName('right')[0];
+    var leftStack = [calendar.leftElement];
+    var rightStack = [calendar.rightElement];
+
+    this.setMode = function (newMode) {
+      calendar.setMode(newMode);
+      mode = newMode;
+      this.updateUI();
+    };
+
+    this.setPlanner = function (newPlanner) {
+      calendar.setPlanner(newPlanner);
+      this.updateUI();
+    };
+
+    this.scheduleItemClicked = function (schedule) {
+      console.log(schedule);
+    };
+
+    this.updateUI = function () {
+      calendar.updateUI();
+
+      leftContainer.innerHTML = rightContainer.innerHTML = '';
+      leftContainer.appendChild(leftStack[leftStack.length - 1]);
+      rightContainer.appendChild(rightStack[rightStack.length - 1]);
     };
 
     this.onHandover = function () {

@@ -170,7 +170,7 @@
         element.style.display = 'none';
       }, 350);
     }
-    
+
     this.reset();
     this.updateUI();
   }
@@ -523,11 +523,16 @@
     var endPicker = new DateTimePicker('ends_at');
     this.element = elem;
 
-    form.title.value = schedule.title;
-    form.location.value = schedule.location;
-    form.description.value = schedule.description;
     elem.getElementsByClassName('start-date-picker')[0].appendChild(startPicker.element);
     elem.getElementsByClassName('end-date-picker')[0].appendChild(endPicker.element);
+
+    if (schedule) {
+      form.title.value = schedule.title;
+      form.location.value = schedule.location;
+      form.description.value = schedule.description;
+      startPicker.setDate(schedule.startsAt);
+      endPicker.setDate(schedule.endsAt);
+    }
 
     form.allday.onchange = function (e) {
       endPicker.setEnabled(!this.checked);

@@ -443,16 +443,15 @@
     var elem = document.getElementById('template-datetime-picker').cloneNode(true);
     var date = new Date();
     this.element = elem;
+    this.valueChanged = null;
 
     date.setSeconds(0, 0);
     elem.id = '';
     var inputs = elem.getElementsByTagName('input');
     var selects = elem.getElementsByTagName('select');
-    for (var i = 0; i < inputs.length; i++) {
-      inputs[i].name = 'name_' + inputs[i].name;
-    }
-    for (var i = 0; i < selects.length; i++) {
-      selects[i].name = 'name_' + selects[i].name;
+    var allFields = Array.from(inputs).concat(Array.from(selects));
+    for (var i = 0; i < allFields.length; i++) {
+      allFields[i].name = name + '_' + allFields[i].name;
     }
     for (var i = 0; i < 24; i++) {
       var opt = new Option('' + i, '' + i);
@@ -463,34 +462,47 @@
       selects[1].appendChild(opt);
     }
 
-    inputs[0].onchange = function (e) {
-      date.setFullYear(this.value);
-      that.updateUI();
-    }
-    inputs[1].onchange = function (e) {
-      date.setMonth(this.value - 1);
-      that.updateUI();
-    }
-    inputs[2].onchange = function (e) {
-      date.setDate(this.value);
-      that.updateUI();
-    }
-    selects[0].onchange = function (e) {
-      date.setHours(this.value);
-      that.updateUI();
-    }
-    selects[1].onchange = function (e) {
-      date.setMinutes(this.value);
+    function changeHandler() {
+      if (that.valueChanged) {
+        that.valueChanged.call(that);
+      }
       that.updateUI();
     }
 
+    inputs[0].onchange = function (e) {
+      date.setFullYear(this.value);
+      changeHandler();
+    };
+    inputs[1].onchange = function (e) {
+      date.setMonth(this.value - 1);
+      changeHandler();
+    };
+    inputs[2].onchange = function (e) {
+      date.setDate(this.value);
+      changeHandler();
+    };
+    selects[0].onchange = function (e) {
+      date.setHours(this.value);
+      changeHandler();
+    };
+    selects[1].onchange = function (e) {
+      date.setMinutes(this.value);
+      changeHandler();
+    };
+
     this.setDate = function (newDate) {
-      date = newDate;
+      date = new Date(newDate);
       this.updateUI();
     }
 
     this.getDate = function () {
       return date;
+    }
+
+    this.setEnabled = function (enabled) {
+      for (var i = 0; i < allFields.length; i++) {
+        allFields[i].disabled = !enabled;
+      }
     }
 
     this.updateUI = function () {
@@ -517,14 +529,26 @@
     elem.getElementsByClassName('start-date-picker')[0].appendChild(startPicker.element);
     elem.getElementsByClassName('end-date-picker')[0].appendChild(endPicker.element);
 
+    form.allday.onchange = function (e) {
+      endPicker.setEnabled(!this.checked);
+    };
+
+    startPicker.valueChanged = endPicker.valueChanged = function () {
+      var sd = startPicker.getDate();
+      var ed = endPicker.getDate();
+      if (sd.getTime() > ed.getTime()) {
+        endPicker.setDate(sd);
+      }
+    };
+
     form.onsubmit = function (e) {
       host.detailsClosing();
       return false;
-    }
+    };
 
     form.cancel.onclick = function (e) {
       host.detailsClosing();
-    }
+    };
   }
 
   function PlannerView(baseElement, clientCore) {

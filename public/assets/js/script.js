@@ -1,4 +1,30 @@
 (function (win) {
+  /** @type {{start: (modalObj: object) => void, end: () => void}} */
+  var modal;
+
+  function getModalObj() {
+    var container = document.getElementById('modal-container');
+    var fader = container.getElementsByClassName('fader')[0];
+    var contentsArea = container.getElementsByClassName('contents')[0];
+
+    return {
+      start: function (modalObj) {
+        container.style.display = 'block';
+        setTimeout(function () {
+          fader.style.opacity = '1';
+          contentsArea.appendChild(modalObj.element);
+        }, 10);
+      },
+      end: function () {
+        contentsArea.innerHTML = '';
+        fader.style.opacity = '0';
+        setTimeout(function () {
+          container.style.display = 'none';
+        }, 550);
+      }
+    };
+  }
+
   function SignInForm(baseElement) {
     this.element = baseElement;
     this.mode = 0; // 0: sign-in, 1: create account
@@ -185,13 +211,22 @@
     var listElement = this.element.getElementsByClassName('list')[0];
     var addNewButton = this.element.getElementsByClassName('add-new')[0];
 
-    addNewButton.addEventListener('click', (function (e) {
-      if (!this.addNewClicked) {
-        console.warn('[PlannerList] Please assign appropriate event handler to `addNewClicked`.');
-      } else {
-        this.addNewClicked.call(this);
-      }
-    }).bind(this), false);
+    addNewButton.addEventListener('click', function (e) {
+      var dialog = new NewPlannerModal();
+      dialog.submitClicked = function (title) {
+        clientCore.createPlanner({title: title},
+          function (s, planner) {
+            that.planners.push(planner);
+            that.updateUI();
+            modal.end();
+          },
+          (function (s, e) {
+            this.setError(e.error.message);
+          }).bind(this),
+        );
+      };
+      modal.start(dialog);
+    }, false);
 
     this.updateUI = function () {
       listElement.innerHTML = '';
@@ -617,6 +652,40 @@
     this.element = e;
   }
 
+  function NewPlannerModal() {
+    var that = this;
+    var e = document.getElementById('modal-new-planner').cloneNode(true);
+    e.id = '';
+    var form = e.getElementsByTagName('form')[0];
+    var errorMsg = e.getElementsByClassName('error-message')[0];
+
+    form.onsubmit = function (e) {
+      if (that.submitClicked) {
+        that.submitClicked.call(that, form.title.value);
+      }
+      return false;
+    };
+
+    form.cancel.onclick = function (e) {
+      modal.end();
+    }
+
+    this.element = e;
+
+    /** @type {(title: string) => void} */
+    this.submitClicked = null;
+
+    this.setError = function (message) {
+      if (!message) {
+        errorMsg.textContent = '';
+        errorMsg.style.display = 'none';
+      } else {
+        errorMsg.textContent = message;
+        errorMsg.style.display = 'block';
+      }
+    }
+  }
+
   function Client(serviceUrl) {
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
     var rootElement = document.getElementById('app-main');
@@ -690,6 +759,7 @@
 
   win.onload = function (e) {
     win.app = {};
+    modal = getModalObj();
     var client = new Client('http://localhost:3000/api');
     //var signInForm = new SignInForm(document.getElementById('signin-form'));
     //var plannerList = new PlannerList(document.getElementById('planner-list'));

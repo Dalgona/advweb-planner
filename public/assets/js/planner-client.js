@@ -59,6 +59,15 @@
 
   AjaxWrapper.prototype = {
     // POST /user
+    /**
+     * Create a new user account.
+     * @param {{fullName: string, email: string, auth: string}} args
+     * @param {(status: number, user: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    createUser: function (args, onComplete, onError) {
+      this._ajax('post', '/user', args, onComplete, onError);
+    },
 
     // GET /user
     /**
@@ -71,6 +80,15 @@
     },
 
     // PUT /user
+    /**
+     * Update information of the current user.
+     * @param {{fullName: string, auth: string}} args
+     * @param {(status: number, user: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    updateUserInfo: function (args, onComplete, onError) {
+      this._ajax('put', '/user', args, onComplete, onError);
+    },
 
     // DELETE /user
     /**
@@ -136,6 +154,15 @@
     },
 
     // POST /planner
+    /**
+     * Create a new planner.
+     * @param {{title: string}} args
+     * @param {(status: number, planner: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    createPlanner: function (args, onComplete, onError) {
+      this._ajax('post', '/planner', args, onComplete, onError);
+    },
 
     // GET /planner/:id
     /**
@@ -149,6 +176,16 @@
     },
 
     // PUT /planner/:id
+    /**
+     * Update information of selected planner.
+     * @param {number} plannerId
+     * @param {{title: string}} args
+     * @param {(status: number, planner: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    updatePlanner: function (plannerId, args, onComplete, onError) {
+      this._ajax('put', '/planner/' + plannerId, args, onComplete, onError);
+    },
 
     // DELETE /planner/:id
     /**
@@ -188,6 +225,17 @@
     },
 
     // POST /planner/:id/schedule
+    /**
+     * Add a new schedule to the selected planner.
+     * @param {number} plannerId
+     * @param {object} args
+     * @param {(status: number, schedule: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    createSchedule: function (plannerId, args, onComplete, onError) {
+      this._ajax('post', '/planner/' + plannerId + '/schedule', args,
+        onComplete, onError);
+    },
 
     // GET /schedule/:id
     /**
@@ -201,6 +249,16 @@
     },
 
     // PUT /schedule/:id
+    /**
+     * Edit information of the selected schedule.
+     * @param {number} id
+     * @param {object} args
+     * @param {(status: number, schedule: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    updateSchedule: function (scheduleId, args, onComplete, onError) {
+      this._ajax('put', '/schedule/' + scheduleId, args, onComplete, onError);
+    },
 
     // DELETE /schedule/:id
     /**
@@ -228,6 +286,17 @@
     },
 
     // POST /planner/:id/todo-list
+    /**
+     * Add a new to-do list to the selected planner.
+     * @param {number} plannerId
+     * @param {{title: string}} args
+     * @param {(status: number, list: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    createTodoList: function (plannerId, args, onComplete, onError) {
+      this._ajax('post', '/planner/' + plannerId + '/todo-list', args,
+        onComplete, onError);
+    },
 
     // GET /todo-list/:id
     /**
@@ -241,6 +310,16 @@
     },
 
     // PUT /todo-list/:id
+    /**
+     * Update information of the selected to-do list.
+     * @param {number} listId
+     * @param {{title: string}} args
+     * @param {(status: number, list: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    updateTodoList: function (listId, args, onComplete, onError) {
+      this._ajax('put', '/todo-list/' + listId, args, onComplete, onError);
+    },
 
     // DELETE /todo-list/:id
     /**
@@ -254,6 +333,17 @@
     },
 
     // POST /todo-list/:id/item
+    /**
+     * Append a new list item to the selected to-do list.
+     * @param {number} listId
+     * @param {{title: string}} args
+     * @param {(status: number, item: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    createTodoItem: function (listId, args, onComplete, onError) {
+      this._ajax('post', '/todo-list/' + listId + '/item', args,
+        onComplete, onError);
+    },
 
     // GET /todo-item/:id
     /**
@@ -267,6 +357,16 @@
     },
 
     // PUT /todo-item/:id
+    /**
+     * Modify information of the selected to-do list item.
+     * @param {number} itemId
+     * @param {{title: string}} args
+     * @param {(status: number, item: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    updateTodoItem: function (itemId, args, onComplete, onError) {
+      this._ajax('put', '/todo-item/' + itemId, args, onComplete, onError);
+    },
 
     // DELETE /todo-item/:id
     /**
@@ -318,6 +418,16 @@
     },
 
     // PUT /label/:id
+    /**
+     * Modify information of the selected label.
+     * @param {number} labelId
+     * @param {{title: string, color: string}} args
+     * @param {(status: number, newLabel: object) => void} onComplete
+     * @param {(status: number, reason: object) => void} onError
+     */
+    updateLabel: function (labelId, args, onComplete, onError) {
+      this._ajax('put', '/label/' + id, args, onComplete, onError);
+    },
 
     // DELETE /label/:id
     /**
@@ -332,6 +442,6 @@
   };
 
   win.plannerClientLib = {
-    AjaxWrapper: AjaxWrapper, // TODO: hide when completed
+    AjaxWrapper: AjaxWrapper
   };
 })(window);

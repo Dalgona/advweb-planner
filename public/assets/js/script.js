@@ -649,17 +649,27 @@
     }
 
     uiSection.signInForm.submitClicked = function (email, fullName, password, confirm) {
+      var errHandler = (function (s, e) {
+        this.setError(e.error.message);
+      }).bind(this);
+
       switch (this.mode) {
         case 0: // sign-in
           core.signIn(email, password, (function (s, user) {
             doSignIn(user);
-          }).bind(this), (function (s, e) {
-            this.setError(e.error.message);
-          }).bind(this));
+          }).bind(this), errHandler);
           break;
 
         case 1: // create account
-          this.setError('not implemented');
+          core.createUser({
+            fullName: fullName,
+            email: email,
+            auth: password
+          }, (function (s, user) {
+            core.signIn(email, password, (function (s, user) {
+              doSignIn(user);
+            }).bind(this), errHandler);
+          }).bind(this), errHandler);
           break;
       }
     };

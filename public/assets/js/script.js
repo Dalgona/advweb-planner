@@ -369,6 +369,7 @@
     var right = template.cloneNode(true);
     var leftTable = document.createElement('table');
     var rightTable = document.createElement('table');
+    var addScheduleBtn = document.createElement('button');
     var planner = null;
 
     this.leftElement = left;
@@ -381,6 +382,14 @@
     spinner.nextClicked = (function (mode, date) {
       this.updateUI();
     }).bind(this);
+
+    right.getElementsByTagName('header')[0].appendChild(addScheduleBtn);
+    addScheduleBtn.className = 'tinted';
+    addScheduleBtn.type = 'button';
+    addScheduleBtn.textContent = 'New Schedule';
+    addScheduleBtn.onclick = function (e) {
+      host.newScheduleClicked(planner);
+    };
 
     leftTable.className = rightTable.className = 'calendar';
     left.getElementsByClassName('main')[0].appendChild(leftTable);
@@ -551,9 +560,10 @@
     this.updateUI();
   }
 
-  function ScheduleDetailsView(host, schedule, clientCore) {
+  function ScheduleDetailsView(host, target, clientCore) {
     var elem = document.getElementById('schedule-details').cloneNode(true);
     var form = elem.getElementsByTagName('form')[0];
+    var titleElem = elem.getElementsByClassName('details-title')[0];
     var startPicker = new DateTimePicker('starts_at');
     var endPicker = new DateTimePicker('ends_at');
     this.element = elem;
@@ -561,12 +571,21 @@
     elem.getElementsByClassName('start-date-picker')[0].appendChild(startPicker.element);
     elem.getElementsByClassName('end-date-picker')[0].appendChild(endPicker.element);
 
-    if (schedule) {
-      form.title.value = schedule.title;
-      form.location.value = schedule.location;
-      form.description.value = schedule.description;
-      startPicker.setDate(schedule.startsAt);
-      endPicker.setDate(schedule.endsAt);
+    if (target.schedule) {
+      titleElem.textContent = 'Schedule Details';
+      form.title.value = target.schedule.title;
+      form.location.value = target.schedule.location;
+      form.description.value = target.schedule.description;
+      form.allday.checked = target.schedule.allday;
+      startPicker.setDate(target.schedule.startsAt);
+      endPicker.setDate(target.schedule.endsAt);
+    } else {
+      titleElem.textContent = 'New Schedule';
+    }
+
+    if (form.allday.checked) {
+      endPicker.setDate(startPicker.getDate());
+      endPicker.setEnabled(false);
     }
 
     form.allday.onchange = function (e) {
@@ -582,7 +601,23 @@
     };
 
     form.onsubmit = function (e) {
-      host.detailsClosing();
+      var args = {
+        title: form.title.value,
+        location: form.location.value,
+        description: form.description.value,
+        startsAt: startPicker.getDate(),
+        endsAt: endPicker.getDate(),
+        allday: form.allday.checked,
+        labels: ''
+      }
+      var updateFunction =
+        target.schedule
+        ? clientCore.updateSchedule.bind(clientCore, target.schedule.id)
+        : clientCore.createSchedule.bind(clientCore, target.planner.id);
+      updateFunction(args,
+        function (s, schedule) { host.detailsClosing(); },
+        function (s, e) { console.warn(e); }
+      );
       return false;
     };
 
@@ -613,7 +648,13 @@
     };
 
     this.scheduleItemClicked = function (schedule) {
-      var view = new ScheduleDetailsView(this, schedule, clientCore);
+      var view = new ScheduleDetailsView(this, {schedule: schedule}, clientCore);
+      rightStack.push(view.element);
+      this.updateUI();
+    };
+
+    this.newScheduleClicked = function (planner) {
+      var view = new ScheduleDetailsView(this, {planner: planner}, clientCore);
       rightStack.push(view.element);
       this.updateUI();
     };
@@ -621,7 +662,7 @@
     this.detailsClosing = function () {
       rightStack.pop();
       this.updateUI();
-    }
+    };
 
     this.updateUI = function () {
       calendar.updateUI();

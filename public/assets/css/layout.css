@@ -226,6 +226,10 @@ body {
 }
 
 #planner-view .contents > header {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
   box-sizing: border-box;
   padding: 0.25rem;
   height: 5rem;

@@ -11,7 +11,6 @@ const ejwt = require('express-jwt');
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
 const apiTodoList = require('../../api/todo-list');
-const apiTodoItem = require('../../api/todo-item');
 const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
@@ -77,9 +76,9 @@ router.delete('/:id(\\d+)', (req, res, next) => {
 router.post('/:id(\\d+)/item', (req, res, next) => {
   const title = (req.body.title || '').trim();
   if (title) {
-    apiTodoItem
-    .create(req.user, req.params.id, title)
-    .then(item => sendJSON(res, 201, apiTodoItem.toJSON(item)))
+    apiTodoList
+    .createItem(req.user, req.params.id, title)
+    .then(item => sendJSON(res, 201, apiTodoList.itemToJSON(item)))
     .catch(sendError(res));
   } else {
     sendError(res)(400, error.code.E_ARGMISSING);

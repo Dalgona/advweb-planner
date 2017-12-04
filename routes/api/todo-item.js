@@ -10,7 +10,7 @@ const ejwt = require('express-jwt');
 
 const config = require('../../config/config.json')[env];
 const error = require('../../api/error');
-const apiTodoItem = require('../../api/todo-item');
+const apiTodoList = require('../../api/todo-list');
 const { sendJSON, sendError } = require('./utils');
 
 const router = express.Router();
@@ -22,9 +22,9 @@ router.use(ejwt({ secret: config.jwtSecret }));
  * Gets information of specified to-do list item.
  */
 router.get('/:id(\\d+)', (req, res, next) => {
-  apiTodoItem
-  .get(req.user, req.params.id)
-  .then(item => sendJSON(res, 200, apiTodoItem.toJSON(item)))
+  apiTodoList
+  .getItem(req.user, req.params.id)
+  .then(item => sendJSON(res, 200, apiTodoList.itemToJSON(item)))
   .catch(sendError(res));
 });
 
@@ -35,9 +35,9 @@ router.get('/:id(\\d+)', (req, res, next) => {
 router.put('/:id(\\d+)', (req, res, next) => {
   const title = (req.body.title || '').trim();
   const complete = req.body.complete ? req.body.complete === 'true' : null;
-  apiTodoItem
-  .update(req.user, req.params.id, { title: title, complete: complete })
-  .then(item => sendJSON(res, 200, apiTodoItem.toJSON(item)))
+  apiTodoList
+  .updateItem(req.user, req.params.id, { title: title, complete: complete })
+  .then(item => sendJSON(res, 200, apiTodoList.itemToJSON(item)))
   .catch(sendError(res));
 });
 
@@ -46,8 +46,8 @@ router.put('/:id(\\d+)', (req, res, next) => {
  * Permanently deletes specified to-do list item.
  */
 router.delete('/:id(\\d+)', (req, res, next) => {
-  apiTodoItem
-  .delete(req.user, req.params.id)
+  apiTodoList
+  .deleteItem(req.user, req.params.id)
   .then(() => sendJSON(res, 200, { message: 'to-do list item deleted' }))
   .catch(sendError(res));
 });

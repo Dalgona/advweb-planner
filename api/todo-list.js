@@ -1,8 +1,12 @@
 const error = require('../api/error');
 const TodoList = require('../models').TodoList;
+const TodoItem = require('../models').TodoItem;
 const apiPlanner = require('./planner');
-const apiTodoItem = require('./todo-item');
 const { failWithDBError } = require('./utils');
+
+/**************************/
+/* TO-DO LIST CONTROLLERS */
+/**************************/
 
 /*
  * Gets a list of all to-do lists saved in the specified planner.
@@ -112,7 +116,7 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
   .getTodoItems({ order: [ [ 'createdAt', 'ASC' ] ] })
   .then(items => {
     ret.complete = items.reduce((acc, item) => acc && item.complete, true);
-    ret.items = items.map(apiTodoItem.toJSON);
+    ret.items = items.map(itemToJSON);
     if (options.stripPlanner) {
       resolve(ret);
     } else {
@@ -133,6 +137,101 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
   .catch(reject);
 });
 
+/*******************************/
+/* TO-DO LIST ITEM CONTROLLERS */
+/*******************************/
+
+/*
+ * Creates a new to-do list item
+ */
+const createItem = (token, listId, title) => new Promise((resolve, reject) => {
+  get(token, listId)
+  .then(list => {
+    const now = new Date();
+    list.createTodoItem({
+      createdAt: now,
+      modifiedAt: now,
+      title: title,
+      complete: false
+    })
+    .then(resolve)
+    .catch(failWithDBError(reject));
+  })
+  .catch(reject);
+});
+
+/*
+ * Gets information of specified to-do list item.
+ */
+const getItem = (token, itemId) => new Promise((resolve, reject) => {
+  TodoItem
+  .findOne({ where: { id: itemId } })
+  .then(item => {
+    if (item) {
+      item
+      .getTodoList()
+      .then(list => {
+        apiTodoList
+        .getOwner(list)
+        .then(uid => {
+          if (uid == token.userId) {
+            resolve(item);
+          } else {
+            reject({ status: 403, code: error.code.E_NOACCESS });
+          }
+        })
+        .catch(reject);
+      })
+      .catch(failWithDBError(reject));
+    } else {
+      reject({ status: 404, code: error.code.E_NOENT });
+    }
+  })
+  .catch(failWithDBError(reject));
+});
+
+/*
+ * Modifies information of specified to-do list item.
+ */
+const updateItem = (token, itemId, args) => new Promise((resolve, reject) => {
+  getItem(token, itemId)
+  .then(item => {
+    let change = false;
+    if (args.title) {
+      item.title = args.title;
+      change = true;
+    }
+    if (args.complete !== null) {
+      item.complete = args.complete;
+      change = true;
+    }
+    if (change) {
+      item.modifiedAt = new Date();
+    }
+    item.save().then(resolve).catch(failWithDBError(reject));
+  })
+  .catch(reject);
+});
+
+/*
+ * Permanently deletes specified to-do list item.
+ */
+const deleteItem = (token, itemId) => new Promise((resolve, reject) => {
+  getItem(token, itemId)
+  .then(item => {
+    item.destroy({ force: true }).then(resolve).catch(failWithDBError(reject));
+  })
+  .catch(reject);
+});
+
+const itemToJSON = instance => ({
+  id: instance.id,
+  createdAt: instance.createdAt,
+  modifiedAt: instance.modifiedAt,
+  title: instance.title,
+  complete: instance.complete
+});
+
 module.exports = {
   getAll: getAll,
   create: create,
@@ -140,5 +239,10 @@ module.exports = {
   getOwner: getOwner,
   update: update,
   delete: delete_,
-  toJSON: toJSON
+  toJSON: toJSON,
+  createItem: createItem,
+  getItem: getItem,
+  updateItem: updateItem,
+  deleteItem: deleteItem,
+  itemToJSON: itemToJSON
 };

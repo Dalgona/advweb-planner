@@ -694,9 +694,9 @@
     var e = document.createElement('div');
     e.className = 'schedule-list-item';
     var contents = '<div class="labels">';
-    for (var i in schedule.labels) {
+    /*for (var i in schedule.labels) {
       contents += '<div class="label" style="background-color:' + schedule.labels[i].color + '"></div>';
-    }
+    }*/
     contents += '</div>' + schedule.title;
     e.innerHTML = contents;
     e.onclick = host.scheduleItemClicked.bind(host, schedule);

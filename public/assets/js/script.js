@@ -621,6 +621,16 @@
       return false;
     };
 
+    form.delete.onclick = function (e) {
+      var message = 'Are you sure you want to delete this schedule?\n(This cannot be undone.)';
+      if (confirm(message)) {
+        clientCore.deleteSchedule(target.schedule.id,
+          function (s, res) { host.detailsClosing(); },
+          function (s, e) { console.warn(e); }
+        );
+      }
+    }
+
     form.cancel.onclick = function (e) {
       host.detailsClosing();
     };

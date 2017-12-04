@@ -87,7 +87,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
   .then(p => {
     apiPlanner
     .toJSON(p, stripUser)
-    .then(o => sendJSON(res, 205, o))
+    .then(o => sendJSON(res, 200, o))
     .catch(sendError(res));
   })
   .catch(sendError(res));
@@ -101,7 +101,7 @@ router.delete('/:id(\\d+)', (req, res, next) => {
   const title = req.body.title || '';
   apiPlanner
   .delete(req.user, req.params.id, title)
-  .then(() => sendJSON(res, 205, { message: 'planner deleted '}))
+  .then(() => sendJSON(res, 200, { message: 'planner deleted '}))
   .catch(sendError(res));
 });
 

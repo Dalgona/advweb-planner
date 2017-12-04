@@ -49,7 +49,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
   .then(l => {
     apiTodoList
     .toJSON(l, { stripPlanner: stripPlanner, stripUser: stripUser })
-    .then(o => sendJSON(res, 205, o))
+    .then(o => sendJSON(res, 200, o))
     .catch(sendError(res));
   })
   .catch(sendError(res));
@@ -62,7 +62,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiTodoList
   .delete(req.user, req.params.id)
-  .then(() => sendJSON(res, 205, { message: 'to-do list deleted' }))
+  .then(() => sendJSON(res, 200, { message: 'to-do list deleted' }))
   .catch(sendError(res));
 });
 

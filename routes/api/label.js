@@ -66,7 +66,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
     title: title,
     color: req.body.color
   })
-  .then(l => sendJSON(res, 205, apiLabel.toJSON(l)))
+  .then(l => sendJSON(res, 200, apiLabel.toJSON(l)))
   .catch(sendError(res));
 });
 
@@ -78,7 +78,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiLabel
   .delete(req.user, req.params.id)
-  .then(() => sendJSON(res, 205, { message: 'label deleted' }))
+  .then(() => sendJSON(res, 200, { message: 'label deleted' }))
   .catch(sendError(res));
 });
 

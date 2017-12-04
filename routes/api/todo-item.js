@@ -37,7 +37,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
   const complete = req.body.complete ? req.body.complete === 'true' : null;
   apiTodoItem
   .update(req.user, req.params.id, { title: title, complete: complete })
-  .then(item => sendJSON(res, 205, apiTodoItem.toJSON(item)))
+  .then(item => sendJSON(res, 200, apiTodoItem.toJSON(item)))
   .catch(sendError(res));
 });
 
@@ -48,7 +48,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiTodoItem
   .delete(req.user, req.params.id)
-  .then(() => sendJSON(res, 205, { message: 'to-do list item deleted' }))
+  .then(() => sendJSON(res, 200, { message: 'to-do list item deleted' }))
   .catch(sendError(res));
 });
 

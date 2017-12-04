@@ -50,7 +50,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
     .then(s => {
       apiSchedule
       .toJSON(s, { stripPlanner: stripPlanner, stripUser: stripUser })
-      .then(o => sendJSON(res, 205, o))
+      .then(o => sendJSON(res, 200, o))
       .catch(sendError(res));
     })
     .catch(sendError(res));
@@ -66,7 +66,7 @@ router.put('/:id(\\d+)', (req, res, next) => {
 router.delete('/:id(\\d+)', (req, res, next) => {
   apiSchedule
   .delete(req.user, req.params.id)
-  .then(() => sendJSON(res, 205, { message: 'schedule deleted' }))
+  .then(() => sendJSON(res, 200, { message: 'schedule deleted' }))
   .catch(sendError(res));
 });
 

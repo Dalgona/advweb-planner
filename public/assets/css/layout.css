@@ -157,6 +157,7 @@ body {
 /****************/
 
 #planner-view {
+  position: relative;
   box-sizing: border-box;
   width: calc(90%);
   height: calc(100% - 2rem);
@@ -287,6 +288,34 @@ body {
   height: 100%;
   box-sizing: border-box;
   overflow-y: auto;
+}
+
+#planner-view .mode-tabs {
+  position: absolute;
+  top: 0;
+  right: 0;
+  transform: rotateZ(90deg) translate(calc(100% + 2rem));
+  transform-origin: 100% 0;
+}
+
+#planner-view .mode-tabs .tab {
+  display: inline-block;
+  margin-right: 0.5em;
+  box-sizing: border-box;
+  padding: 0.25em 0.5em;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: white;
+  box-shadow: 1px -1px 1px rgba(0, 0, 0, 0.125);
+  background-image: linear-gradient(to top, black -10%, transparent 20%);
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+  cursor: pointer;
+}
+
+#planner-view .mode-tabs .tab.active {
+  height: 3.5em;
+  background-image: linear-gradient(to top, white 44%, transparent 56%);
 }
 
 /****************/

@@ -485,36 +485,78 @@
   }
 
   function TodoListView(host, clientCore) {
+    var that = this;
     var template = document.getElementById('template-paper');
-    var left = template.cloneNode(true);
+    var left = document.getElementById('todo-lists');
     var right = template.cloneNode(true);
-    var leftTable = document.createElement('table');
+    var leftTable = left.getElementsByTagName('table')[0];
     var rightTable = document.createElement('table');
     var planner = null;
+    var todoLists = [];
 
     left.id = '';
     right.id = '';
     this.leftElement = left;
     this.rightElement = right;
 
-    left.getElementsByTagName('header')[0].innerHTML = '<h1>To-do Lists</h1>';
-
-    leftTable.className = 'todo-lists';
     rightTable.className = 'todo-details';
     left.getElementsByClassName('main')[0].appendChild(leftTable);
     right.getElementsByClassName('main')[0].appendChild(rightTable);
 
-    function buildTableContents() {
-      //
+    function buildListTable() {
+      var tbody = leftTable.getElementsByTagName('tbody')[0];
+      for (var i in todoLists) {
+        var row = new TodoListTableRow(that, todoLists[i]);
+        tbody.appendChild(row.element);
+      }
     }
+
+    this.todoListClicked = function (todoList) {
+      right.innerHTML = JSON.stringify(todoList);
+    };
 
     this.setPlanner = function (newPlanner) {
       planner = newPlanner;
+      clientCore.getAllTodoLists(planner.id,
+        function (s, list) {
+          todoLists = list;
+          that.updateUI();
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
       this.updateUI();
     };
 
     this.updateUI = function () {
+      buildListTable();
     };
+  }
+
+  function TodoListTableRow(host, todoList) {
+    var elem = document.createElement('tr');
+    var titleCell = document.createElement('td');
+    var chkCell = document.createElement('td');
+    var chkbox = document.createElement('input');
+
+    titleCell.className = 'col-title';
+    chkCell.className = 'col-complete';
+    chkbox.type = 'checkbox';
+    chkbox.disabled = true;
+    chkbox.checked = todoList.complete;
+    titleCell.textContent = todoList.title;
+
+    chkCell.appendChild(chkbox);
+    elem.appendChild(titleCell);
+    elem.appendChild(chkCell);
+
+    elem.onclick = function (e) {
+      if (host.todoListClicked) {
+        host.todoListClicked(todoList);
+      }
+    };
+
+    this.element = elem;
   }
 
   function DateTimePicker(name) {

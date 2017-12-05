@@ -208,6 +208,10 @@ body {
   margin: 0.5rem 0;
 }
 
+#planner-view .border .paper .main {
+  overflow-y: auto;
+}
+
 #planner-view .left .paper {
   padding: 1rem 2.5rem 1rem 1rem;
   border-top-left-radius: 0.25rem;
@@ -458,3 +462,49 @@ body {
 /***************/
 /* TO-DO LISTS */
 /***************/
+
+#planner-view table.todo-lists {
+  box-sizing: border-box;
+  width: 100%;
+}
+
+#planner-view table.todo-lists tbody tr {
+  cursor: pointer;
+}
+
+#planner-view table.todo-lists tr:hover {
+  background-color: rgba(0, 0, 0, 0.0625);
+}
+
+#planner-view table.todo-lists th {
+  box-sizing: border-box;
+  padding: 0.25rem 0.5rem;
+  text-align: left;
+  background: gray;
+  color: white;
+}
+
+#planner-view table.todo-lists td {
+  box-sizing: border-box;
+  padding: 0.5rem 0.5rem;
+  border-bottom: 1px solid silver;
+}
+
+#planner-view table.todo-lists td.col-complete {
+  width: 2rem;
+  text-align: center;
+}
+
+#planner-view table.todo-lists td.col-complete input[type=checkbox] {
+  display: inline;
+}
+
+#planner-view table.todo-lists .new-list {
+  display: flex;
+}
+
+#planner-view table.todo-lists .new-list input[type=text] {
+  -webkit-flex: 1;
+  flex: 1;
+  margin-right: 5px;
+}

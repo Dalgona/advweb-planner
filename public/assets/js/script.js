@@ -372,6 +372,8 @@
     var addScheduleBtn = document.createElement('button');
     var planner = null;
 
+    left.id = '';
+    right.id = '';
     this.leftElement = left;
     this.rightElement = right;
 
@@ -480,6 +482,39 @@
         null
       );
     }
+  }
+
+  function TodoListView(host, clientCore) {
+    var template = document.getElementById('template-paper');
+    var left = template.cloneNode(true);
+    var right = template.cloneNode(true);
+    var leftTable = document.createElement('table');
+    var rightTable = document.createElement('table');
+    var planner = null;
+
+    left.id = '';
+    right.id = '';
+    this.leftElement = left;
+    this.rightElement = right;
+
+    left.getElementsByTagName('header')[0].innerHTML = '<h1>To-do Lists</h1>';
+
+    leftTable.className = 'todo-lists';
+    rightTable.className = 'todo-details';
+    left.getElementsByClassName('main')[0].appendChild(leftTable);
+    right.getElementsByClassName('main')[0].appendChild(rightTable);
+
+    function buildTableContents() {
+      //
+    }
+
+    this.setPlanner = function (newPlanner) {
+      planner = newPlanner;
+      this.updateUI();
+    };
+
+    this.updateUI = function () {
+    };
   }
 
   function DateTimePicker(name) {
@@ -641,10 +676,17 @@
 
     var mode = 0;
     var calendar = new CalendarView(this, clientCore);
+    var todoList = new TodoListView(this, clientCore);
     var leftContainer = this.element.getElementsByClassName('left')[0];
     var rightContainer = this.element.getElementsByClassName('right')[0];
-    var leftStack = [calendar.leftElement];
-    var rightStack = [calendar.rightElement];
+    var leftStack = [];
+    var rightStack = [];
+
+    this.setView = function (view) {
+      leftStack = [view.leftElement];
+      rightStack = [view.rightElement];
+      this.updateUI();
+    }
 
     this.setMode = function (newMode) {
       calendar.setMode(newMode);
@@ -654,6 +696,7 @@
 
     this.setPlanner = function (newPlanner) {
       calendar.setPlanner(newPlanner);
+      todoList.setPlanner(newPlanner);
       this.updateUI();
     };
 
@@ -686,6 +729,7 @@
       this.updateUI();
     };
 
+    this.setView(todoList);
     this.setMode(0);
   }
 

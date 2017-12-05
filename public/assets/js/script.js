@@ -677,14 +677,28 @@
     var mode = 0;
     var calendar = new CalendarView(this, clientCore);
     var todoList = new TodoListView(this, clientCore);
+    var subViews = [calendar, todoList];
+    var tabs = this.element.getElementsByClassName('tab');
     var leftContainer = this.element.getElementsByClassName('left')[0];
     var rightContainer = this.element.getElementsByClassName('right')[0];
     var leftStack = [];
     var rightStack = [];
 
-    this.setView = function (view) {
-      leftStack = [view.leftElement];
-      rightStack = [view.rightElement];
+    for (var i = 0; i < tabs.length; i++) {
+      (function (index) {
+        tabs[index].onclick = (function (e) {
+          this.setView(index);
+        }).bind(this);
+      }).call(this, i);
+    }
+
+    this.setView = function (index) {
+      leftStack = [subViews[index].leftElement];
+      rightStack = [subViews[index].rightElement];
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+      }
+      tabs[index].classList.add('active');
       this.updateUI();
     }
 
@@ -729,7 +743,7 @@
       this.updateUI();
     };
 
-    this.setView(todoList);
+    this.setView(1);
     this.setMode(0);
   }
 

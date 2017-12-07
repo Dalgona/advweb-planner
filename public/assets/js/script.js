@@ -633,6 +633,17 @@
       return false;
     };
 
+    this.todoItemUpdating = function (todoItem) {
+      var chkbox = this;
+      clientCore.updateTodoItem(todoItem.id, {complete: chkbox.checked},
+        function (s, list) {
+          //
+        }, function (s, e) {
+          console.log(e);
+        }
+      );
+    };
+
     this.todoItemDeleting = function (todoItem) {
       var rowToBeDeleted = this;
       clientCore.deleteTodoListItem(todoItem.id,
@@ -675,6 +686,13 @@
     elem.appendChild(chkCell);
     elem.appendChild(titleCell);
     elem.appendChild(delCell);
+
+    chkbox.onchange = function (e) {
+      if (host.todoItemUpdating) {
+        host.todoItemUpdating.call(this, todoItem);
+      }
+      e.stopPropagation();
+    };
 
     delbtn.onclick = function (e) {
       if (host.todoItemDeleting) {

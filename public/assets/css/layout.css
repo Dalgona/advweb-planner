@@ -494,6 +494,11 @@ body {
   background-color: #ffffc0;
 }
 
+#planner-view table.todo-list tr.complete td.col-title {
+  text-decoration: line-through;
+  opacity: 0.5;
+}
+
 #planner-view table.todo-list td.col-complete,
 #planner-view table.todo-list th.col-complete,
 #planner-view table.todo-list td.col-delete,

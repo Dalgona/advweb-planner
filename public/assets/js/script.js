@@ -589,6 +589,10 @@
     var chkbox = document.createElement('input');
     var delbtn = document.createElement('button');
 
+    if (todoList.complete) {
+      elem.classList.add('complete');
+    }
+
     chkCell.className = 'col-complete';
     titleCell.className = 'col-title';
     delCell.className = 'col-delete';
@@ -707,6 +711,10 @@
     var chkbox = document.createElement('input');
     var delbtn = document.createElement('button');
 
+    if (todoItem.complete) {
+      elem.classList.add('complete');
+    }
+
     chkCell.className = 'col-complete';
     titleCell.className = 'col-title';
     delCell.className = 'col-delete';
@@ -722,6 +730,7 @@
     elem.appendChild(delCell);
 
     chkbox.onchange = function (e) {
+      elem.classList[this.checked ? 'add' : 'remove']('complete');
       if (host.todoItemUpdating) {
         host.todoItemUpdating.call(this, todoItem);
       }

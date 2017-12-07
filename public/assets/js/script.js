@@ -486,13 +486,12 @@
 
   function TodoListView(host, clientCore) {
     var that = this;
-    var template = document.getElementById('template-paper');
     var left = document.getElementById('todo-lists').cloneNode(true);
-    var right = template.cloneNode(true);
+    var right = document.getElementById('todo-details').cloneNode(true);
     var leftTable = left.getElementsByTagName('table')[0];
-    var rightTable = document.createElement('table');
     var leftTbody = leftTable.getElementsByTagName('tbody')[0];
     var newListForm = left.getElementsByTagName('form')[0];
+    var detailsView = new TodoListDetailsView(right, clientCore);
     var planner = null;
     var todoLists = [];
 
@@ -500,9 +499,6 @@
     right.id = '';
     this.leftElement = left;
     this.rightElement = right;
-
-    rightTable.className = 'todo-details';
-    right.getElementsByClassName('main')[0].appendChild(rightTable);
 
     newListForm.onsubmit = function (e) {
       var thisForm = this;
@@ -527,7 +523,12 @@
     }
 
     this.todoListClicked = function (todoList) {
-      right.innerHTML = JSON.stringify(todoList);
+      var rows = leftTbody.getElementsByTagName('tr');
+      for (var i = 0; i < rows.length; i++) {
+        rows[i].classList.remove('selected');
+      }
+      this.classList.add('selected');
+      detailsView.setTodoList(todoList);
     };
 
     this.todoListDeleting = function (todoList) {
@@ -598,6 +599,57 @@
       }
       e.stopPropagation();
     };
+
+    this.element = elem;
+  }
+
+  function TodoListDetailsView(baseElement, clientCore) {
+    var that = this;
+    var elem = baseElement;
+    var title = elem.getElementsByClassName('list-title')[0];
+    var table = elem.getElementsByTagName('table')[0];
+    var tbody = table.getElementsByTagName('tbody')[0];
+    var newItemForm = elem.getElementsByTagName('form')[0];
+    var todoList;
+
+    function buildListTable() {
+      for (var i in todoList.items) {
+        var row = new TodoItemTableRow(that, todoList.items[i]);
+        tbody.appendChild(row.element);
+      }
+    }
+
+    this.setTodoList = function (newTodoList) {
+      todoList = newTodoList;
+      title.textContent = todoList.title;
+      while (tbody.firstChild) {
+        tbody.removeChild(tbody.firstChild);
+      }
+      buildListTable();
+    };
+  }
+
+  function TodoItemTableRow(host, todoItem) {
+    var elem = document.createElement('tr');
+    var chkCell = document.createElement('td');
+    var titleCell = document.createElement('td');
+    var delCell = document.createElement('td');
+    var chkbox = document.createElement('input');
+    var delbtn = document.createElement('button');
+
+    chkCell.className = 'col-complete';
+    titleCell.className = 'col-title';
+    delCell.className = 'col-delete';
+    chkbox.type = 'checkbox';
+    chkbox.checked = todoItem.complete;
+    titleCell.textContent = todoItem.title;
+    delbtn.type = 'button';
+
+    chkCell.appendChild(chkbox);
+    delCell.appendChild(delbtn);
+    elem.appendChild(chkCell);
+    elem.appendChild(titleCell);
+    elem.appendChild(delCell);
 
     this.element = elem;
   }

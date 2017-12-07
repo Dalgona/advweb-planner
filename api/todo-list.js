@@ -115,7 +115,10 @@ const toJSON = (instance, options) => new Promise((resolve, reject) => {
   instance
   .getTodoItems({ order: [ [ 'createdAt', 'ASC' ] ] })
   .then(items => {
-    ret.complete = items.reduce((acc, item) => acc && item.complete, true);
+    ret.complete =
+      items.length
+      ? items.reduce((acc, item) => acc && item.complete, true)
+      : false;
     ret.items = items.map(itemToJSON);
     if (options.stripPlanner) {
       resolve(ret);

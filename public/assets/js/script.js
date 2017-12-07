@@ -619,6 +619,31 @@
       }
     }
 
+    newItemForm.onsubmit = function (e) {
+      var thisForm = this;
+      clientCore.createTodoItem(todoList.id, {title: thisForm.title.value},
+        function (s, newItem) {
+          var row = new TodoItemTableRow(that, newItem);
+          tbody.appendChild(row.element);
+          thisForm.reset();
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
+      return false;
+    };
+
+    this.todoItemDeleting = function (todoItem) {
+      var rowToBeDeleted = this;
+      clientCore.deleteTodoListItem(todoItem.id,
+        function (s, r) {
+          tbody.removeChild(rowToBeDeleted);
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
+    };
+
     this.setTodoList = function (newTodoList) {
       todoList = newTodoList;
       title.textContent = todoList.title;
@@ -650,6 +675,12 @@
     elem.appendChild(chkCell);
     elem.appendChild(titleCell);
     elem.appendChild(delCell);
+
+    delbtn.onclick = function (e) {
+      if (host.todoItemDeleting) {
+        host.todoItemDeleting.call(elem, todoItem);
+      }
+    };
 
     this.element = elem;
   }

@@ -463,20 +463,20 @@ body {
 /* TO-DO LISTS */
 /***************/
 
-#planner-view table.todo-lists {
+#planner-view table.todo-list {
   box-sizing: border-box;
   width: 100%;
 }
 
-#planner-view table.todo-lists tbody tr {
+#planner-view table.todo-list tbody tr {
   cursor: pointer;
 }
 
-#planner-view table.todo-lists tr:hover {
+#planner-view table.todo-list tr:hover {
   background-color: rgba(0, 0, 0, 0.0625);
 }
 
-#planner-view table.todo-lists th {
+#planner-view table.todo-list th {
   box-sizing: border-box;
   padding: 0.25rem 0.5rem;
   text-align: left;
@@ -484,26 +484,47 @@ body {
   color: white;
 }
 
-#planner-view table.todo-lists td {
+#planner-view table.todo-list td {
   box-sizing: border-box;
   padding: 0.5rem 0.5rem;
   border-bottom: 1px solid silver;
 }
 
-#planner-view table.todo-lists td.col-complete {
+#planner-view table.todo-list tr.selected td {
+  background-color: #ffffc0;
+}
+
+#planner-view table.todo-list td.col-complete,
+#planner-view table.todo-list th.col-complete,
+#planner-view table.todo-list td.col-delete,
+#planner-view table.todo-list th.col-delete {
   width: 2rem;
   text-align: center;
 }
 
-#planner-view table.todo-lists td.col-complete input[type=checkbox] {
+#planner-view table.todo-list td.col-complete input[type=checkbox] {
   display: inline;
 }
 
-#planner-view table.todo-lists .new-list {
+#planner-view table.todo-list td.col-delete button {
+  display: inline-block;
+  width: 1.25rem;
+  height: 1.25rem;
+  padding: 0;
+  border: none;
+  background: white url('/assets/images/icon_todo_delete.svg');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#planner-view table.todo-list .new-list,
+#planner-view table.todo-list .new-item {
   display: flex;
 }
 
-#planner-view table.todo-lists .new-list input[type=text] {
+#planner-view table.todo-list .new-list input[type=text],
+#planner-view table.todo-list .new-item input[type=text] {
   -webkit-flex: 1;
   flex: 1;
   margin-right: 5px;

@@ -487,10 +487,11 @@
   function TodoListView(host, clientCore) {
     var that = this;
     var template = document.getElementById('template-paper');
-    var left = document.getElementById('todo-lists');
+    var left = document.getElementById('todo-lists').cloneNode(true);
     var right = template.cloneNode(true);
     var leftTable = left.getElementsByTagName('table')[0];
     var rightTable = document.createElement('table');
+    var leftTbody = leftTable.getElementsByTagName('tbody')[0];
     var newListForm = left.getElementsByTagName('form')[0];
     var planner = null;
     var todoLists = [];
@@ -501,7 +502,6 @@
     this.rightElement = right;
 
     rightTable.className = 'todo-details';
-    left.getElementsByClassName('main')[0].appendChild(leftTable);
     right.getElementsByClassName('main')[0].appendChild(rightTable);
 
     newListForm.onsubmit = function (e) {
@@ -510,7 +510,7 @@
         function (s, newList) {
           var row = new TodoListTableRow(that, newList);
           todoLists.push(newList);
-          leftTable.getElementsByTagName('tbody')[0].appendChild(row.element);
+          leftTbody.appendChild(row.element);
           thisForm.reset();
         }, function (s, e) {
           console.warn(e);
@@ -520,15 +520,29 @@
     };
 
     function buildListTable() {
-      var tbody = leftTable.getElementsByTagName('tbody')[0];
       for (var i in todoLists) {
         var row = new TodoListTableRow(that, todoLists[i]);
-        tbody.appendChild(row.element);
+        leftTbody.appendChild(row.element);
       }
     }
 
     this.todoListClicked = function (todoList) {
       right.innerHTML = JSON.stringify(todoList);
+    };
+
+    this.todoListDeleting = function (todoList) {
+      var rowToBeDeleted = this;
+      var msg = 'Are you sure you want to delete this to-do list?\n(This cannot be undone.)';
+      if (confirm(msg)) {
+        clientCore.deleteTodoList(todoList.id,
+          function (s, r) {
+            leftTbody.removeChild(rowToBeDeleted);
+            // TODO: reset the right page after deletion
+          }, function (s, e) {
+            console.log(e);
+          }
+        );
+      }
     };
 
     this.setPlanner = function (newPlanner) {
@@ -553,23 +567,36 @@
     var elem = document.createElement('tr');
     var titleCell = document.createElement('td');
     var chkCell = document.createElement('td');
+    var delCell = document.createElement('td');
     var chkbox = document.createElement('input');
+    var delbtn = document.createElement('button');
 
-    titleCell.className = 'col-title';
     chkCell.className = 'col-complete';
+    titleCell.className = 'col-title';
+    delCell.className = 'col-delete';
     chkbox.type = 'checkbox';
     chkbox.disabled = true;
     chkbox.checked = todoList.complete;
     titleCell.textContent = todoList.title;
+    delbtn.type = 'button';
 
     chkCell.appendChild(chkbox);
-    elem.appendChild(titleCell);
+    delCell.appendChild(delbtn);
     elem.appendChild(chkCell);
+    elem.appendChild(titleCell);
+    elem.appendChild(delCell);
 
     elem.onclick = function (e) {
       if (host.todoListClicked) {
-        host.todoListClicked(todoList);
+        host.todoListClicked.call(this, todoList);
       }
+    };
+
+    delbtn.onclick = function (e) {
+      if (host.todoListDeleting) {
+        host.todoListDeleting.call(elem, todoList);
+      }
+      e.stopPropagation();
     };
 
     this.element = elem;

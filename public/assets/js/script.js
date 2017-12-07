@@ -549,7 +549,8 @@
         clientCore.deleteTodoList(todoList.id,
           function (s, r) {
             leftTbody.removeChild(rowToBeDeleted);
-            // TODO: reset the right page after deletion
+            detailsView.setTodoList(null);
+            delete todoLists[todoList.id];
           }, function (s, e) {
             console.log(e);
           }
@@ -622,6 +623,8 @@
   function TodoListDetailsView(host, baseElement, clientCore) {
     var that = this;
     var elem = baseElement;
+    var placeholder = document.getElementById('todo-details-placeholder');
+    var origContents = elem.getElementsByClassName('contents')[0];
     var title = elem.getElementsByClassName('list-title')[0];
     var table = elem.getElementsByTagName('table')[0];
     var tbody = table.getElementsByTagName('tbody')[0];
@@ -634,6 +637,8 @@
         tbody.appendChild(row.element);
       }
     }
+
+    elem.replaceChild(placeholder, elem.firstElementChild);
 
     newItemForm.onsubmit = function (e) {
       var thisForm = this;
@@ -681,11 +686,16 @@
 
     this.setTodoList = function (newTodoList) {
       todoList = newTodoList;
-      title.textContent = todoList.title;
-      while (tbody.firstChild) {
-        tbody.removeChild(tbody.firstChild);
+      if (!todoList) {
+        elem.replaceChild(placeholder, elem.firstElementChild);
+      } else {
+        elem.replaceChild(origContents, elem.firstElementChild);
+        title.textContent = todoList.title;
+        while (tbody.firstChild) {
+          tbody.removeChild(tbody.firstChild);
+        }
+        buildListTable();
       }
-      buildListTable();
     };
   }
 

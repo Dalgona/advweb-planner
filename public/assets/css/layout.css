@@ -529,3 +529,18 @@ body {
   flex: 1;
   margin-right: 5px;
 }
+
+#todo-details-placeholder .main {
+  display: -webkit-flex;
+  display: flex;
+  -webkit-align-items: center;
+  align-items: center;
+  -webkit-justify-content: center;
+  justify-content: center;
+}
+
+#todo-details-placeholder .main > div {
+  font-size: 1.2em;
+  text-align: center;
+  opacity: 0.5;
+}

@@ -729,18 +729,18 @@
     };
   }
 
-  function PlannerView(baseElement, clientCore) {
-    this.element = baseElement;
-
+  function PlannerView(planner, clientCore) {
     var mode = 0;
+    var elem = document.getElementById('planner-view').cloneNode('true');
     var calendar = new CalendarView(this, clientCore);
     var todoList = new TodoListView(this, clientCore);
     var subViews = [calendar, todoList];
-    var tabs = this.element.getElementsByClassName('tab');
-    var leftContainer = this.element.getElementsByClassName('left')[0];
-    var rightContainer = this.element.getElementsByClassName('right')[0];
+    var tabs = elem.getElementsByClassName('tab');
+    var leftContainer = elem.getElementsByClassName('left')[0];
+    var rightContainer = elem.getElementsByClassName('right')[0];
     var leftStack = [];
     var rightStack = [];
+    this.element = elem;
 
     for (var i = 0; i < tabs.length; i++) {
       (function (index) {
@@ -803,6 +803,7 @@
 
     this.setView(1);
     this.setMode(0);
+    this.setPlanner(planner);
   }
 
   function ScheduleListItem(host, schedule) {
@@ -857,16 +858,13 @@
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
     var rootElement = document.getElementById('app-main');
     var mainElement = rootElement.getElementsByTagName('main')[0];
-    var uiSection = {
-      signInForm: new SignInForm(document.getElementById('signin-form')),
-      plannerList: new PlannerList(document.getElementById('planner-list'), core),
-      plannerView: new PlannerView(document.getElementById('planner-view'), core)
-    };
+    var signInForm = new SignInForm(document.getElementById('signin-form'));
+    var plannerList = new PlannerList(document.getElementById('planner-list'), core);
     var currentUI = null;
 
     function doSignIn(user) {
       document.getElementById('user-settings').textContent = user.fullName;
-      uiHandover(uiSection.plannerList);
+      uiHandover(plannerList);
     }
 
     function uiHandover(newUI) {
@@ -884,7 +882,7 @@
       }, 600);
     }
 
-    uiSection.signInForm.submitClicked = function (email, fullName, password, confirm) {
+    signInForm.submitClicked = function (email, fullName, password, confirm) {
       var errHandler = (function (s, e) {
         this.setError(e.error.message);
       }).bind(this);
@@ -909,18 +907,17 @@
           break;
       }
     };
-    uiSection.plannerList.itemClicked = function (selectedPlanner) {
-      uiSection.plannerView.setPlanner(selectedPlanner);
-      uiHandover(uiSection.plannerView);
+    plannerList.itemClicked = function (selectedPlanner) {
+      uiHandover(new PlannerView(selectedPlanner, core));
     };
 
     if (localStorage.plannerUserToken) {
       core.getUserInfo(
         function (s, user) { doSignIn(user); },
-        function (s, e) { uiHandover(uiSection.signInForm); }
+        function (s, e) { uiHandover(signInForm); }
       );
     } else {
-      uiHandover(uiSection.signInForm);
+      uiHandover(signInForm);
     }
   }
 

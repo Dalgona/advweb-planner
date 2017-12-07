@@ -49,6 +49,20 @@ body {
   transition: opacity 0.5s;
 }
 
+#app-title.active {
+  cursor: pointer;
+}
+
+#app-title.active span::after {
+  content: ' (Close Planner)';
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#app-title.active:hover span::after {
+  opacity: 0.75;
+}
+
 /****************/
 /* SIGN-IN FORM */
 /****************/

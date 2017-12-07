@@ -264,8 +264,8 @@
     this.updateUI();
   }
 
-  function DateSpinner(baseElement) {
-    this.element = baseElement;
+  function DateSpinner() {
+    this.element = document.getElementById('planner-date-spinner').cloneNode(true);
     this.baseDate = new Date();
     this.prevClicked = null;
     this.nextClicked = null;
@@ -364,7 +364,7 @@
     /* TODO: add mode buttons on the right page */
     var mode = 0;
     var template = document.getElementById('template-paper');
-    var spinner = new DateSpinner(document.getElementById('planner-date-spinner'));
+    var spinner = new DateSpinner();
     var left = template.cloneNode(true);
     var right = template.cloneNode(true);
     var leftTable = document.createElement('table');
@@ -627,7 +627,7 @@
   function TodoListDetailsView(host, baseElement, clientCore) {
     var that = this;
     var elem = baseElement;
-    var placeholder = document.getElementById('todo-details-placeholder');
+    var placeholder = document.getElementById('todo-details-placeholder').cloneNode(true);
     var origContents = elem.getElementsByClassName('contents')[0];
     var title = elem.getElementsByClassName('list-title')[0];
     var table = elem.getElementsByTagName('table')[0];
@@ -1029,6 +1029,8 @@
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
     var rootElement = document.getElementById('app-main');
     var mainElement = rootElement.getElementsByTagName('main')[0];
+    var appTitle = document.getElementById('app-title');
+    var origTitleText = appTitle.textContent;
     var signInForm = new SignInForm(document.getElementById('signin-form'));
     var plannerList = new PlannerList(document.getElementById('planner-list'), core);
     var currentUI = null;
@@ -1079,7 +1081,17 @@
       }
     };
     plannerList.itemClicked = function (selectedPlanner) {
+      appTitle.innerHTML = '<span>&lt; ' + selectedPlanner.title + '</span>';
+      appTitle.classList.add('active');
       uiHandover(new PlannerView(selectedPlanner, core));
+    };
+
+    appTitle.onclick = function (e) {
+      if (appTitle.classList.contains('active')) {
+        appTitle.innerHTML = '<span>' + origTitleText + '</span>';
+        appTitle.classList.remove('active');
+        uiHandover(plannerList);
+      }
     };
 
     if (localStorage.plannerUserToken) {

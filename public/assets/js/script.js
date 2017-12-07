@@ -491,9 +491,9 @@
     var leftTable = left.getElementsByTagName('table')[0];
     var leftTbody = leftTable.getElementsByTagName('tbody')[0];
     var newListForm = left.getElementsByTagName('form')[0];
-    var detailsView = new TodoListDetailsView(right, clientCore);
+    var detailsView = new TodoListDetailsView(that, right, clientCore);
     var planner = null;
-    var todoLists = [];
+    var todoLists = {};
 
     left.id = '';
     right.id = '';
@@ -505,7 +505,7 @@
       clientCore.createTodoList(planner.id, {title: this.title.value},
         function (s, newList) {
           var row = new TodoListTableRow(that, newList);
-          todoLists.push(newList);
+          todoLists[newList.id] = newList;
           leftTbody.appendChild(row.element);
           thisForm.reset();
         }, function (s, e) {
@@ -531,6 +531,17 @@
       detailsView.setTodoList(todoList);
     };
 
+    this.todoListUpdating = function (list, item) {
+      clientCore.getTodoList(list.id,
+        function (s, newList) {
+          todoLists[newList.id] = newList;
+          that.updateUI();
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
+    };
+
     this.todoListDeleting = function (todoList) {
       var rowToBeDeleted = this;
       var msg = 'Are you sure you want to delete this to-do list?\n(This cannot be undone.)';
@@ -550,7 +561,9 @@
       planner = newPlanner;
       clientCore.getAllTodoLists(planner.id,
         function (s, list) {
-          todoLists = list;
+          for (var i in list) {
+            todoLists[list[i].id] = list[i];
+          }
           that.updateUI();
         }, function (s, e) {
           console.warn(e);
@@ -560,6 +573,9 @@
     };
 
     this.updateUI = function () {
+      while (leftTbody.firstChild) {
+        leftTbody.removeChild(leftTbody.firstChild);
+      }
       buildListTable();
     };
   }
@@ -603,14 +619,14 @@
     this.element = elem;
   }
 
-  function TodoListDetailsView(baseElement, clientCore) {
+  function TodoListDetailsView(host, baseElement, clientCore) {
     var that = this;
     var elem = baseElement;
     var title = elem.getElementsByClassName('list-title')[0];
     var table = elem.getElementsByTagName('table')[0];
     var tbody = table.getElementsByTagName('tbody')[0];
     var newItemForm = elem.getElementsByTagName('form')[0];
-    var todoList;
+    var todoList = null;
 
     function buildListTable() {
       for (var i in todoList.items) {
@@ -625,6 +641,9 @@
         function (s, newItem) {
           var row = new TodoItemTableRow(that, newItem);
           tbody.appendChild(row.element);
+          if (host.todoListUpdating) {
+            host.todoListUpdating(todoList, newItem);
+          }
           thisForm.reset();
         }, function (s, e) {
           console.warn(e);
@@ -637,7 +656,9 @@
       var chkbox = this;
       clientCore.updateTodoItem(todoItem.id, {complete: chkbox.checked},
         function (s, list) {
-          //
+          if (host.todoListUpdating) {
+            host.todoListUpdating(todoList, todoItem);
+          }
         }, function (s, e) {
           console.log(e);
         }
@@ -649,6 +670,9 @@
       clientCore.deleteTodoListItem(todoItem.id,
         function (s, r) {
           tbody.removeChild(rowToBeDeleted);
+          if (host.todoListUpdating) {
+            host.todoListUpdating(todoList, null);
+          }
         }, function (s, e) {
           console.warn(e);
         }

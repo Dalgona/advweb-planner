@@ -328,7 +328,7 @@
      * @param {(status: number, response: object) => void} onComplete
      * @param {(status: number, reason: object) => void} onError
      */
-    deletetodoList: function (listId, onComplete, onError) {
+    deleteTodoList: function (listId, onComplete, onError) {
       this._ajax('delete', '/todo-list/' + listId, null, onComplete, onError);
     },
 

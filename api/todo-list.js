@@ -171,8 +171,7 @@ const getItem = (token, itemId) => new Promise((resolve, reject) => {
       item
       .getTodoList()
       .then(list => {
-        apiTodoList
-        .getOwner(list)
+        getOwner(list)
         .then(uid => {
           if (uid == token.userId) {
             resolve(item);

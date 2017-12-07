@@ -972,7 +972,7 @@
       this.updateUI();
     };
 
-    this.setView(1);
+    this.setView(0);
     this.setMode(0);
     this.setPlanner(planner);
   }

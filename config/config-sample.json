@@ -1,4 +1,8 @@
 {
+  "common": {
+    "appName": "MyApplication"
+  },
+
   "development": {
     "username": "root",
     "password": null,

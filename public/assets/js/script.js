@@ -491,6 +491,7 @@
     var right = template.cloneNode(true);
     var leftTable = left.getElementsByTagName('table')[0];
     var rightTable = document.createElement('table');
+    var newListForm = left.getElementsByTagName('form')[0];
     var planner = null;
     var todoLists = [];
 
@@ -502,6 +503,21 @@
     rightTable.className = 'todo-details';
     left.getElementsByClassName('main')[0].appendChild(leftTable);
     right.getElementsByClassName('main')[0].appendChild(rightTable);
+
+    newListForm.onsubmit = function (e) {
+      var thisForm = this;
+      clientCore.createTodoList(planner.id, {title: this.title.value},
+        function (s, newList) {
+          var row = new TodoListTableRow(that, newList);
+          todoLists.push(newList);
+          leftTable.getElementsByTagName('tbody')[0].appendChild(row.element);
+          thisForm.reset();
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
+      return false;
+    };
 
     function buildListTable() {
       var tbody = leftTable.getElementsByTagName('tbody')[0];

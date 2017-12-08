@@ -845,6 +845,8 @@
       endPicker.setDate(target.schedule.endsAt);
     } else {
       titleElem.textContent = 'New Schedule';
+      form.delete.disabled = true;
+      form.delete.style.display = 'none';
     }
 
     if (form.allday.checked) {

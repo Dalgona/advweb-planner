@@ -6,6 +6,31 @@
   opacity: 0.6;
 }
 
+.app span.icon.arrow {
+  display: inline-block;
+  width: 8px;
+  height: 16px;
+  background-image: url('/assets/images/icon_arrows.svg');
+  background-repeat: no-repeat;
+  background-size: cover;
+}
+
+.app span.icon.arrow.left {
+  background-position: 0 0;
+}
+
+.app span.icon.arrow.right {
+  background-position: -8px 0;
+}
+
+.app span.icon.arrow.left.dark {
+  background-position: -16px 0;
+}
+
+.app span.icon.arrow.right.dark {
+  background-position: -24px 0;
+}
+
 .app div.error-message {
   margin-bottom: 0.25rem;
   font-size: 0.8em;

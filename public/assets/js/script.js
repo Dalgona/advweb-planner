@@ -1081,7 +1081,7 @@
       }
     };
     plannerList.itemClicked = function (selectedPlanner) {
-      appTitle.innerHTML = '<span>&lt; ' + selectedPlanner.title + '</span>';
+      appTitle.innerHTML = '<span><span class="icon arrow left"></span> &nbsp;' + selectedPlanner.title + '</span>';
       appTitle.classList.add('active');
       uiHandover(new PlannerView(selectedPlanner, core));
     };

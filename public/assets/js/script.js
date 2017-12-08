@@ -25,24 +25,46 @@
     };
   }
 
+  function TopTabs(baseElement) {
+    var that = this;
+    var elem = baseElement;
+    var tabs = elem.getElementsByClassName('tab');
+
+    this.currentTab = 0;
+    this.element = elem;
+
+    for (var i = 0; i < tabs.length; i++) {
+      (function (index) {
+        tabs[index].onclick = function (e) {
+          that.currentTab = index;
+          that.tabChanged.call(that, that.currentTab);
+          that.updateUI();
+        };
+      })(i);
+    }
+
+    /** @type {(tabIndex: number) => void} */
+    this.tabChanged = null;
+
+    this.updateUI = function () {
+      for (var i = 0; i < tabs.length; i++) {
+        tabs[i].classList.remove('active');
+      }
+      tabs[this.currentTab].classList.add('active');
+    };
+  }
+
   function SignInForm(baseElement) {
     this.element = baseElement;
     this.mode = 0; // 0: sign-in, 1: create account
     this.submitClicked = null;
 
     var that = this;
-    var tabs =
-      this.element
-      .getElementsByClassName('top-tabs')[0]
-      .getElementsByClassName('tab');
-    for (var i = 0; i < tabs.length; i++) {
-      (function (index) {
-        tabs[index].addEventListener('click', function (e) {
-          that.mode = index;
-          that.updateUI();
-        }, false);
-      })(i);
-    }
+    var tabs = new TopTabs(this.element.getElementsByClassName('top-tabs')[0]);
+    tabs.tabChanged = function (tabIndex) {
+      that.mode = tabIndex;
+      that.updateUI();
+    };
 
     var formItems = this.element.getElementsByClassName('form-item');
     for (var i = 0; i < formItems.length; i++) {
@@ -150,10 +172,7 @@
     this.updateUI = function () {
       var elemForSignIn = this.element.getElementsByClassName('for-signin');
       var elemForSignUp = this.element.getElementsByClassName('for-signup');
-      for (var i = 0; i < tabs.length; i++) {
-        tabs[i].classList.remove('active');
-      }
-      tabs[this.mode].classList.add('active');
+      this.setError();
       switch (this.mode) {
         case 0:
           for (var i = 0; i < elemForSignIn.length; i++) {

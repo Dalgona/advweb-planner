@@ -274,6 +274,44 @@
             </form>
           </div>
         </div>
+        <!-- Planner Settings Modal -->
+        <div id="modal-planner-settings" class="modal" style="width: 25rem">
+          <div class="top-tabs">
+            <div class="tab active">Settings</div>
+            <div class="tab">Delete Planner</div>
+          </div>
+          <div class="contents">
+            <form>
+              <div class="form-item"><b>Rename Planner</b></div>
+              <div class="form-item">
+                <input type="text" name="title" placeholder="New Title (Required)" style="width: 100%" required>
+              </div>
+              <div class="form-item" style="text-align: right">
+                <button name="cancel" type="button">Cancel</button>
+                <input name="submit" class="tinted" type="submit" value="Save and Close">
+              </div>
+            </form>
+            <form>
+              <div class="form-item"><b>Delete Planner</b></div>
+              <div class="form-item">
+                You are about to delete this planner.
+                All schedules, to-do lists and any other data associated
+                with this planner will be permanently removed.<br>
+                <strong>This cannot be undone!</strong>
+              </div>
+              <div class="form-item">
+                Please type in the title of this planner to continue.
+              </div>
+              <div class="form-item">
+                <input type="text" name="confirm" style="width: 100%" required>
+              </div>
+              <div class="form-item" style="text-align: right">
+                <button name="cancel" type="button">Cancel</button>
+                <input name="submit" type="submit" value="Delete Planner" class="red" disabled>
+              </div>
+            </form>
+          </div>
+        </div>
         <!-- End of templates -->
       </div>
     </div>

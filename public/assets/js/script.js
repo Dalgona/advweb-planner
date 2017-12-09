@@ -934,13 +934,42 @@
     var rightStack = [];
     this.element = elem;
 
-    for (var i = 0; i < tabs.length; i++) {
+    function modalUpdateClicked(updateArgs) {
+      modal.end();
+      clientCore.updatePlanner(planner.id, updateArgs,
+        function (s, newPlaner) {
+          // Have the host (instance of Client) to handle UI updates.
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
+    }
+
+    function modalDeleteClicked(deleteArgs) {
+      modal.end();
+      clientCore.deletePlanner(planner.id, deleteArgs,
+        function (s, response) {
+          // Have the host (instance of Client) to switch UI scene.
+        }, function (s, e) {
+          console.warn(e);
+        }
+      );
+    }
+
+    for (var i = 0; i < tabs.length - 1; i++) {
       (function (index) {
         tabs[index].onclick = (function (e) {
           this.setView(index);
         }).bind(this);
       }).call(this, i);
     }
+
+    tabs[tabs.length - 1].onclick = (function (e) {
+      var dialog = new PlannerSettingsModal(planner);
+      dialog.updateClicked = modalUpdateClicked;
+      dialog.deleteClicked = modalDeleteClicked;
+      modal.start(dialog);
+    }).bind(this);
 
     this.setView = function (index) {
       leftStack = [subViews[index].leftElement];
@@ -1044,6 +1073,54 @@
         errorMsg.style.display = 'block';
       }
     }
+  }
+
+  function PlannerSettingsModal(planner) {
+    var that = this;
+    var elem = document.getElementById('modal-planner-settings').cloneNode(true);
+    var tabs = new TopTabs(elem.getElementsByClassName('top-tabs')[0]);
+    var forms = elem.getElementsByTagName('form');
+    var settingsForm = forms[0];
+    var deleteForm = forms[1];
+
+    settingsForm.title.value = planner.title;
+
+    tabs.tabChanged = function (tabIndex) {
+      that.updateUI();
+    };
+
+    settingsForm.cancel.onclick = deleteForm.cancel.onclick = function (e) {
+      modal.end();
+    };
+
+    deleteForm.confirm.onkeyup = function (e) {
+      deleteForm.submit.disabled = this.value !== planner.title;
+    };
+
+    settingsForm.onsubmit = function (e) {
+      if (that.updateClicked) {
+        that.updateClicked.call(that, {title: this.title.value});
+      }
+      return false;
+    };
+
+    deleteForm.onsubmit = function (e) {
+      if (that.deleteClicked) {
+        that.deleteClicked.call(that, {title: this.confirm.value});
+      }
+      return false;
+    };
+
+    this.updateUI = function () {
+      for (var i = 0; i < forms.length; i++) {
+        forms[i].style.display = 'none';
+      }
+      forms[tabs.currentTab].style.display = 'block';
+    };
+
+    elem.id = '';
+    this.element = elem;
+    this.updateUI();
   }
 
   function Client(serviceUrl) {

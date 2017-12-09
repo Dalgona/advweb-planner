@@ -301,3 +301,58 @@
 .app .modal-container .modal {
   display: inline-block;
 }
+
+.app .dropdown-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 999999;
+}
+
+.app .dropdown-menu {
+  display: inline-block;
+  position: fixed;
+  top: 0;
+  left: 0;
+  box-sizing: border-box;
+  width: 180px;
+  min-height: 10px;
+  background-color: whitesmoke;
+  border-radius: 5px;
+  font-size: 0.75em;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.75);
+}
+
+.app .dropdown-menu .dropdown-item {
+  padding: 0.5em 0.75em;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.app .dropdown-menu .dropdown-item:first-child {
+  border-top-left-radius: 5px;
+  border-top-right-radius: 5px;
+}
+
+.app .dropdown-menu .dropdown-item:last-child {
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.app .dropdown-menu .dropdown-item:not(.disabled):hover {
+  background-color: silver;
+}
+
+.app .dropdown-menu .dropdown-item.disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.app .dropdown-menu .dropdown-separator {
+  min-height: 1px;
+  max-height: 1px;
+  overflow: hidden;
+  border: 0.5em solid transparent;
+  background-color: #d0d0d0;
+  background-clip: content-box;
+}

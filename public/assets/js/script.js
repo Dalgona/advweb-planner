@@ -54,6 +54,59 @@
     };
   }
 
+  function DropdownMenu() {
+    var that = this;
+    var elem = document.createElement('div');
+    /** @type {[HTMLDivElement]} */
+    var itemElements = [];
+
+    function addItem(title) {
+      var e = document.createElement('div');
+      e.className = 'dropdown-item disabled';
+      e.textContent = title;
+      e.onclick = emptyClickHandler;
+      itemElements.push(e);
+      elem.appendChild(e);
+    }
+
+    function addSeparator() {
+      var e = document.createElement('div');
+      e.className = 'dropdown-separator';
+      e.onclick = emptyClickHandler;
+      elem.appendChild(e);
+    }
+
+    function emptyClickHandler(e) {
+      e.stopPropagation();
+    }
+
+    for (var i = 0; i < arguments.length; i++) {
+      if (arguments[i] === '---') {
+        addSeparator();
+      } else {
+        addItem(arguments[i]);
+      }
+    }
+
+    elem.className = 'dropdown-menu';
+
+    this.element = elem;
+
+    this.itemClicked = function (itemIndex, handler) {
+      var elem = itemElements[itemIndex];
+      if (handler) {
+        elem.onclick = function (e) {
+          handler.call(this, e);
+          e.stopPropagation();
+        };
+        elem.classList.remove('disabled');
+      } else {
+        elem.onclick = emptyClickHandler;
+        elem.classList.add('disabled');
+      }
+    };
+  }
+
   function SignInForm(baseElement) {
     this.element = baseElement;
     this.mode = 0; // 0: sign-in, 1: create account

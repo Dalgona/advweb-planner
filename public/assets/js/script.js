@@ -224,9 +224,9 @@
     this.element = baseElement;
     this.addNewClicked = null;
     this.itemClicked = null;
-    this.planners = [];
 
     var that = this;
+    var planners = {};
     var listElement = this.element.getElementsByClassName('list')[0];
     var addNewButton = this.element.getElementsByClassName('add-new')[0];
 
@@ -235,32 +235,37 @@
       dialog.submitClicked = function (title) {
         clientCore.createPlanner({title: title},
           function (s, planner) {
-            that.planners.push(planner);
+            planners[planner.id] = planner;
             that.updateUI();
             modal.end();
           },
-          (function (s, e) {
-            this.setError(e.error.message);
-          }).bind(this),
+          function (s, e) {
+            that.setError(e.error.message);
+          },
         );
       };
       modal.start(dialog);
     }, false);
 
     this.updateUI = function () {
-      listElement.innerHTML = '';
-      for (var i = 0; i < this.planners.length; i++) {
-        listElement.appendChild(createItemElement(this.planners[i]));
+      while (listElement.firstChild) {
+        listElement.removeChild(listElement.firstChild);
+      }
+      for (var i in planners) {
+        listElement.appendChild(createItemElement(planners[i]));
       }
       listElement.appendChild(addNewButton);
     };
 
     this.onHandover = function () {
       clientCore.getAllPlanners(
-        (function (s, list) {
-          this.planners = list;
-          this.updateUI();
-        }).bind(this),
+        function (s, list) {
+          planners = {};
+          for (var i in list) {
+            planners[list[i].id] = list[i];
+          }
+          that.updateUI();
+        },
         null
       );
     };
@@ -921,7 +926,8 @@
     };
   }
 
-  function PlannerView(planner, clientCore) {
+  function PlannerView(host, planner, clientCore) {
+    var that = this;
     var mode = 0;
     var elem = document.getElementById('planner-view').cloneNode('true');
     var calendar = new CalendarView(this, clientCore);
@@ -938,7 +944,9 @@
       modal.end();
       clientCore.updatePlanner(planner.id, updateArgs,
         function (s, newPlaner) {
-          // Have the host (instance of Client) to handle UI updates.
+          if (that.plannerUpdating) {
+            that.plannerUpdating.call(planner, updateArgs.title);
+          }
         }, function (s, e) {
           console.warn(e);
         }
@@ -949,7 +957,9 @@
       modal.end();
       clientCore.deletePlanner(planner.id, deleteArgs,
         function (s, response) {
-          // Have the host (instance of Client) to switch UI scene.
+          if (that.plannerDeleting) {
+            that.plannerDeleting.call(planner);
+          }
         }, function (s, e) {
           console.warn(e);
         }
@@ -1021,6 +1031,12 @@
     this.onHandover = function () {
       this.updateUI();
     };
+
+    /** @type {(newTitle: string) => void} */
+    this.plannerUpdating = null;
+
+    /** @type {() => void} */
+    this.plannerDeleting = null;
 
     this.setView(0);
     this.setMode(0);
@@ -1124,6 +1140,7 @@
   }
 
   function Client(serviceUrl) {
+    var that = this;
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
     var rootElement = document.getElementById('app-main');
     var mainElement = rootElement.getElementsByTagName('main')[0];
@@ -1153,6 +1170,21 @@
       }, 600);
     }
 
+    function setAppTitle(title) {
+      if (title) {
+        appTitle.innerHTML = '<span><span class="icon arrow left"></span> &nbsp;' + title + '</span>';
+        appTitle.classList.add('active');
+      } else {
+        appTitle.innerHTML = '<span>' + origTitleText + '</span>';
+        appTitle.classList.remove('active');
+      }
+    }
+
+    function plannerDeleting() {
+      setAppTitle();
+      uiHandover(plannerList);
+    }
+
     signInForm.submitClicked = function (email, fullName, password, confirm) {
       var errHandler = (function (s, e) {
         this.setError(e.error.message);
@@ -1178,20 +1210,23 @@
           break;
       }
     };
+
     plannerList.itemClicked = function (selectedPlanner) {
-      appTitle.innerHTML = '<span><span class="icon arrow left"></span> &nbsp;' + selectedPlanner.title + '</span>';
-      appTitle.classList.add('active');
-      uiHandover(new PlannerView(selectedPlanner, core));
+      var plannerView = new PlannerView(that, selectedPlanner, core);
+      plannerView.plannerUpdating = setAppTitle;
+      plannerView.plannerDeleting = plannerDeleting;
+      setAppTitle(selectedPlanner.title);
+      uiHandover(plannerView);
     };
 
     appTitle.onclick = function (e) {
       if (appTitle.classList.contains('active')) {
-        appTitle.innerHTML = '<span>' + origTitleText + '</span>';
-        appTitle.classList.remove('active');
+        setAppTitle();
         uiHandover(plannerList);
       }
     };
 
+    setAppTitle();
     if (localStorage.plannerUserToken) {
       core.getUserInfo(
         function (s, user) { doSignIn(user); },

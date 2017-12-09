@@ -1241,7 +1241,5 @@
     win.app = {};
     modal = getModalObj();
     var client = new Client('http://localhost:3000/api');
-    //var signInForm = new SignInForm(document.getElementById('signin-form'));
-    //var plannerList = new PlannerList(document.getElementById('planner-list'));
-  }
+  };
 })(window);

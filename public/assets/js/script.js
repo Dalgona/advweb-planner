@@ -1226,14 +1226,25 @@
     var rootElement = document.getElementById('app-main');
     var mainElement = rootElement.getElementsByTagName('main')[0];
     var appTitle = document.getElementById('app-title');
+    var userSettings = document.getElementById('user-settings');
     var origTitleText = appTitle.textContent;
     var signInForm = new SignInForm(document.getElementById('signin-form'));
     var plannerList = new PlannerList(document.getElementById('planner-list'), core);
     var currentUI = null;
+    var userMenu = new DropdownMenu('Account Settings', 'Sign Out');
 
     function doSignIn(user) {
-      document.getElementById('user-settings').textContent = user.fullName;
+      userSettings.textContent = user.fullName;
+      userSettings.classList.add('active');
       uiHandover(plannerList);
+    }
+
+    function doSignOut() {
+      userSettings.textContent = 'Please Sign in';
+      userSettings.classList.remove('active');
+      delete localStorage.plannerUserToken;
+      setAppTitle();
+      uiHandover(signInForm);
     }
 
     function uiHandover(newUI) {
@@ -1265,6 +1276,10 @@
       setAppTitle();
       uiHandover(plannerList);
     }
+
+    userMenu.itemClicked(1, function (e) {
+      doSignOut();
+    });
 
     signInForm.submitClicked = function (email, fullName, password, confirm) {
       var errHandler = (function (s, e) {
@@ -1301,11 +1316,18 @@
     };
 
     appTitle.onclick = function (e) {
-      if (appTitle.classList.contains('active')) {
+      if (this.classList.contains('active')) {
         setAppTitle();
         uiHandover(plannerList);
       }
     };
+
+    userSettings.onclick = function (e) {
+      if (this.classList.contains('active')) {
+        dropdownManager.show(2147483647, 48, userMenu);
+        e.stopPropagation();
+      }
+    }
 
     setAppTitle();
     if (localStorage.plannerUserToken) {

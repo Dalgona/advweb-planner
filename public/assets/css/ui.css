@@ -210,9 +210,8 @@
 .app input[type=reset]:disabled {
   background: silver;
   color: white;
-  font-weight: normal;
   text-shadow: none;
-  border: none;
+  border: 1px solid silver;
   cursor: not-allowed;
 }
 
@@ -272,6 +271,7 @@
   left: 0;
   width: 100vw;
   height: 100vh;
+  z-index: 1000000;
 }
 
 .app .modal-container .fader {

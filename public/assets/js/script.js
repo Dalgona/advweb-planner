@@ -1,6 +1,8 @@
 (function (win) {
   /** @type {{start: (modalObj: object) => void, end: () => void}} */
   var modal;
+  /** @type {{show: (x: number, y: number, menu: object) => void, closeAll: () => void}} */
+  var dropdownManager;
 
   function getModalObj() {
     var container = document.getElementById('modal-container');
@@ -23,6 +25,31 @@
         }, 550);
       }
     };
+  }
+
+  function getDropdownManager() {
+    var container = document.getElementById('dropdown-container');
+
+    return {
+      show: function (x, y, menu) {
+        this.closeAll();
+        var elem = menu.element;
+        container.appendChild(elem);
+        var scrWidth = win.innerWidth;
+        var scrHeight = win.innerHeight;
+        var menuWidth = parseFloat(win.getComputedStyle(elem).width);
+        var menuHeight = parseFloat(win.getComputedStyle(elem).height);
+        var newX = Math.min(scrWidth - menuWidth - 5, Math.max(5, x));
+        var newY = Math.min(scrHeight - menuHeight - 5, Math.max(5, y));
+        elem.style.top = newY + 'px';
+        elem.style.left = newX + 'px';
+      },
+      closeAll: function () {
+        while (container.firstChild) {
+          container.removeChild(container.firstChild);
+        }
+      }
+    }
   }
 
   function TopTabs(baseElement) {
@@ -97,6 +124,7 @@
       if (handler) {
         elem.onclick = function (e) {
           handler.call(this, e);
+          dropdownManager.closeAll();
           e.stopPropagation();
         };
         elem.classList.remove('disabled');
@@ -1293,6 +1321,12 @@
   win.onload = function (e) {
     win.app = {};
     modal = getModalObj();
+    dropdownManager = getDropdownManager();
+
     var client = new Client('http://localhost:3000/api');
+
+    document.body.onclick = function (e) {
+      dropdownManager.closeAll();
+    };
   };
 })(window);

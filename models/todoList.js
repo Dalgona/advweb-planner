@@ -10,7 +10,9 @@ module.exports = function (sequelize, DataTypes) {
     TodoList.belongsTo(models.Planner, {
       onDelete: 'CASCADE'
     });
-    TodoList.hasMany(models.TodoItem);
+    TodoList.hasMany(models.TodoItem, {
+      onDelete: 'CASCADE'
+    });
   };
 
   return TodoList;

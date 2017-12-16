@@ -10,8 +10,12 @@ module.exports = function (sequelize, DataTypes) {
     Planner.belongsTo(models.User, {
       onDelete: 'CASCADE'
     });
-    Planner.hasMany(models.Schedule);
-    Planner.hasMany(models.TodoList);
+    Planner.hasMany(models.Schedule, {
+      onDelete: 'CASCADE'
+    });
+    Planner.hasMany(models.TodoList, {
+      onDelete: 'CASCADE'
+    });
   };
 
   return Planner;

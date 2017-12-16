@@ -1264,6 +1264,11 @@
       settingsForm.submit.disabled = !settingsForm.fullName.value || !passwordMatches();
     });
 
+    deleteForm.getElementsByTagName('input').addEventListeners('keyup', function (e) {
+      deleteForm.submit.disabled =
+        deleteForm.email.value != user.email || !deleteForm.auth.value;
+    });
+
     settingsForm.cancel.onclick = deleteForm.cancel.onclick = function (e) {
       modal.end();
     }
@@ -1282,7 +1287,8 @@
     deleteForm.onsubmit = function (e) {
       if (that.deleteClicked) {
         that.deleteClicked.call(that, {
-          // TODO
+          email: this.email.value,
+          auth: this.auth.value
         });
       }
       return false;
@@ -1379,14 +1385,27 @@
           userButton.textContent = newUser.fullName;
           modal.end();
         }, function (s, e) {
-          dialog.setError(e.error.message);
+          if (e.error) {
+            dialog.setError(e.error.message);
+          }
           console.warn(e);
         }
       );
     }
 
-    function userDeleting() {
-      modal.end();
+    function userDeleting(args) {
+      var dialog = this;
+      core.deleteUser(args,
+        function (s, response) {
+          doSignOut();
+          modal.end();
+        }, function (s, e) {
+          if (e.error) {
+            dialog.setError(e.error.message);
+          }
+          console.warn(e);
+        }
+      );
     }
 
     userMenu.itemClicked(0, function (e) {

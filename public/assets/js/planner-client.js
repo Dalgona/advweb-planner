@@ -98,15 +98,7 @@
      * @param {(status: number, reason: object) => void} onError
      */
     deleteUser: function (args, onComplete, onError) {
-      if (!args
-          || !args.email || !args.email.trim()
-          || !args.auth || !args.auth.trim()) {
-        onError(undefined, {
-          error: {
-            message: 'you must provide both the email address and the password'
-          }
-        });
-      }
+      this._ajax('delete', '/user', args, onComplete, onError);
     },
 
     // POST /usr/authenticate

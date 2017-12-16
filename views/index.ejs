@@ -275,7 +275,7 @@
           </div>
         </div>
         <!-- Planner Settings Modal -->
-        <div id="modal-planner-settings" class="modal" style="width: 25rem">
+        <div id="modal-planner-settings" class="modal fill-inputs" style="width: 25rem">
           <div class="top-tabs">
             <div class="tab active">Settings</div>
             <div class="tab">Delete Planner</div>
@@ -284,7 +284,7 @@
             <form>
               <div class="form-item"><b>Rename Planner</b></div>
               <div class="form-item">
-                <input type="text" name="title" placeholder="New Title (Required)" style="width: 100%" required>
+                <input type="text" name="title" placeholder="New Title (Required)" required>
               </div>
               <div class="form-item" style="text-align: right">
                 <button name="cancel" type="button">Cancel</button>
@@ -303,11 +303,65 @@
                 Please type in the title of this planner to continue.
               </div>
               <div class="form-item">
-                <input type="text" name="confirm" style="width: 100%" required>
+                <input type="text" name="confirm" required>
               </div>
               <div class="form-item" style="text-align: right">
                 <button name="cancel" type="button">Cancel</button>
                 <input name="submit" type="submit" value="Delete Planner" class="red" disabled>
+              </div>
+            </form>
+          </div>
+        </div>
+        <!-- Account Settings Modal -->
+        <div id="modal-account-settings" class="modal fill-inputs" style="width: 25rem">
+          <div class="top-tabs">
+            <div class="tab active">Settings</div>
+            <div class="tab">Delete Account</div>
+          </div>
+          <div class="contents">
+            <form>
+              <div class="form-item"><b>Your E-mail Address</b></div>
+              <div><input type="text" name="_useremail" disabled></div>
+              <div class="form-item small dim">
+                This information cannot be changed.
+              </div>
+              <div class="form-item"><b>Change Name</b></div>
+              <div class="form-item">
+                <input type="text" name="fullName" placeholder="Full Name" required>
+              </div>
+              <div class="form-item"><b>Change Password</b></div>
+              <div class="form-item">
+                <input type="password" name="currentPassword" placeholder="Current Password">
+              </div>
+              <div class="form-item">
+                <input type="password" name="newPassword" placeholder="New Password">
+              </div>
+              <div class="form-item">
+                <input type="password" name="newConfirm" placeholder="Conform New Password">
+              </div>
+              <div class="form-item" style="text-align: right">
+                <button name="cancel" type="button">Cancel</button>
+                <input name="submit" type="submit" class="tinted" value="Save and Close">
+              </div>
+            </form>
+            <form>
+              <div class="form-item"><b>Delete Account</b></div>
+              <div class="form-item">
+                You are about to delete your account. Your account information,
+                your planners, and any data saved in your planners will be
+                permanently lost.<br>
+                <strong>This cannot be undone!</strong>
+              </div>
+              <div class="form-item">For the last time, please type in your e-mail address and password to continue.</div>
+              <div class="form-item">
+                <input type="email" name="confirm_email" placeholder="E-mail Address" required>
+              </div>
+              <div class="form-item">
+                <input type="password" name="confirm_password" placeholder="Password" required>
+              </div>
+              <div class="form-item" style="text-align: right">
+                <button name="cancel" type="button">Cancel</button>
+                <input name="submit" type="submit" class="red" value="Delete Account">
               </div>
             </form>
           </div>

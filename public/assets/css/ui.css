@@ -112,6 +112,16 @@
   transition: border-color 0.5s, background-color 0.5s, box-shadow 0.5s;
 }
 
+.app input[type=text]:disabled,
+.app input[type=password]:disabled,
+.app input[type=email]:disabled,
+.app input[type=number]:disabled,
+.app select:disabled,
+.app textarea:disabled {
+  background-color: whitesmoke;
+  transition: border-color 0.5s, background-color 0.5s, box-shadow 0.5s;
+}
+
 .app label.cb-container {
   display: inline-block;
   padding: 0.3rem 0;
@@ -150,7 +160,7 @@
 .app input[type=checkbox]:active + div {
   transform: translate(0, 0);
   background-color: #cef5f3;
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .app input[type=checkbox]:checked + div {
@@ -202,7 +212,7 @@
 .app input[type=submit]:active,
 .app input[type=reset]:active {
   transform: translate(0, 0);
-  box-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 1px rgba(0, 0, 0, 0.5);
 }
 
 .app button:disabled,
@@ -300,6 +310,12 @@
 
 .app .modal-container .modal {
   display: inline-block;
+}
+
+.app .modal-container .modal.fill-inputs input[type=text],
+.app .modal-container .modal.fill-inputs input[type=password],
+.app .modal-container .modal.fill-inputs input[type=email] {
+  width: 100%;
 }
 
 .app .dropdown-container {

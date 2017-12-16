@@ -52,6 +52,17 @@
     }
   }
 
+  /**
+   * @param {string} eventName
+   * @param {Function} handler
+   */
+  HTMLCollection.prototype.addEventListeners = function (eventName, handler) {
+    var thisCollection = this;
+    for (var i = 0; i < this.length; i++) {
+      this[i].addEventListener(eventName, handler, false);
+    }
+  };
+
   function TopTabs(baseElement) {
     var that = this;
     var elem = baseElement;
@@ -1222,6 +1233,85 @@
     this.updateUI();
   }
 
+  function AccountSettingsModal(user) {
+    var that = this;
+    var elem = document.getElementById('modal-account-settings').cloneNode(true);
+    var tabs = new TopTabs(elem.getElementsByClassName('top-tabs')[0]);
+    var forms = elem.getElementsByTagName('form');
+    var settingsForm = forms[0];
+    var deleteForm = forms[1];
+
+    function passwordMatches() {
+      var allBlank =
+        !settingsForm.currentPassword.value
+        && !settingsForm.newPassword.value
+        && !settingsForm.newConfirm.value;
+      var matches =
+        settingsForm.currentPassword.value
+        && settingsForm.newPassword.value
+        && settingsForm.newPassword.value == settingsForm.newConfirm.value;
+      return allBlank || matches;
+    }
+
+    settingsForm._useremail.value = user.email;
+    settingsForm.fullName.value = user.fullName;
+
+    tabs.tabChanged = function (tabIndex) {
+      that.updateUI();
+    };
+
+    settingsForm.getElementsByTagName('input').addEventListeners('keyup', function (e) {
+      settingsForm.submit.disabled = !settingsForm.fullName.value || !passwordMatches();
+    });
+
+    settingsForm.cancel.onclick = deleteForm.cancel.onclick = function (e) {
+      modal.end();
+    }
+
+    settingsForm.onsubmit = function (e) {
+      if (that.updateClicked) {
+        that.updateClicked.call(that, {
+          fullName: this.fullName.value,
+          oldAuth: this.currentPassword.value,
+          newAuth: this.newPassword.value
+        });
+      }
+      return false;
+    };
+
+    deleteForm.onsubmit = function (e) {
+      if (that.deleteClicked) {
+        that.deleteClicked.call(that, {
+          // TODO
+        });
+      }
+      return false;
+    };
+
+    this.updateUI = function () {
+      for (var i = 0; i < forms.length; i++) {
+        forms[i].style.display = 'none';
+      }
+      forms[tabs.currentTab].style.display = 'block';
+    };
+
+    this.setError = function (msg) {
+      var errElem = forms[tabs.currentTab].getElementsByClassName('error-message')[0];
+      if (!msg) {
+        errElem.textContent = '';
+        errElem.style.display = 'none';
+      } else {
+        errElem.textContent = msg;
+        errElem.style.display = 'block';
+      }
+    }
+
+    elem.id = '';
+    this.element = elem;
+    this.setError();
+    this.updateUI();
+  }
+
   function Client(serviceUrl) {
     var that = this;
     var core = new win.plannerClientLib.AjaxWrapper(serviceUrl);
@@ -1280,6 +1370,31 @@
       setAppTitle();
       uiHandover(plannerList);
     }
+
+    function userUpdating(args) {
+      var dialog = this;
+      core.updateUserInfo(args,
+        function (s, newUser) {
+          currentUser = newUser;
+          userButton.textContent = newUser.fullName;
+          modal.end();
+        }, function (s, e) {
+          dialog.setError(e.error.message);
+          console.warn(e);
+        }
+      );
+    }
+
+    function userDeleting() {
+      modal.end();
+    }
+
+    userMenu.itemClicked(0, function (e) {
+      var dialog = new AccountSettingsModal(currentUser);
+      dialog.updateClicked = userUpdating;
+      dialog.deleteClicked = userDeleting;
+      modal.start(dialog);
+    })
 
     userMenu.itemClicked(1, function (e) {
       doSignOut();

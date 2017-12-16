@@ -320,8 +320,10 @@
           </div>
           <div class="contents">
             <form>
+              <div class="error-message">
+              </div>
               <div class="form-item"><b>Your E-mail Address</b></div>
-              <div><input type="text" name="_useremail" disabled></div>
+              <div class="form-item"><input type="text" name="_useremail" disabled></div>
               <div class="form-item small dim">
                 This information cannot be changed.
               </div>
@@ -339,12 +341,18 @@
               <div class="form-item">
                 <input type="password" name="newConfirm" placeholder="Conform New Password">
               </div>
+              <div class="form-item small dim">
+                Your password will be changed only if these three fields above
+                are properly filled.
+              </div>
               <div class="form-item" style="text-align: right">
                 <button name="cancel" type="button">Cancel</button>
                 <input name="submit" type="submit" class="tinted" value="Save and Close">
               </div>
             </form>
             <form>
+              <div class="error-message">
+              </div>
               <div class="form-item"><b>Delete Account</b></div>
               <div class="form-item">
                 You are about to delete your account. Your account information,

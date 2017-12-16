@@ -64,7 +64,9 @@
       (function (index) {
         tabs[index].onclick = function (e) {
           that.currentTab = index;
-          that.tabChanged.call(that, that.currentTab);
+          if (that.tabChanged) {
+            that.tabChanged.call(that, that.currentTab);
+          }
           that.updateUI();
         };
       })(i);
@@ -1226,22 +1228,24 @@
     var rootElement = document.getElementById('app-main');
     var mainElement = rootElement.getElementsByTagName('main')[0];
     var appTitle = document.getElementById('app-title');
-    var userSettings = document.getElementById('user-settings');
+    var userButton = document.getElementById('user-settings');
     var origTitleText = appTitle.textContent;
     var signInForm = new SignInForm(document.getElementById('signin-form'));
     var plannerList = new PlannerList(document.getElementById('planner-list'), core);
-    var currentUI = null;
     var userMenu = new DropdownMenu('Account Settings', 'Sign Out');
+    var currentUI = null;
+    var currentUser = null;
 
     function doSignIn(user) {
-      userSettings.textContent = user.fullName;
-      userSettings.classList.add('active');
+      currentUser = user;
+      userButton.textContent = user.fullName;
+      userButton.classList.add('active');
       uiHandover(plannerList);
     }
 
     function doSignOut() {
-      userSettings.textContent = 'Please Sign in';
-      userSettings.classList.remove('active');
+      userButton.textContent = 'Please Sign in';
+      userButton.classList.remove('active');
       delete localStorage.plannerUserToken;
       setAppTitle();
       uiHandover(signInForm);
@@ -1322,7 +1326,7 @@
       }
     };
 
-    userSettings.onclick = function (e) {
+    userButton.onclick = function (e) {
       if (this.classList.contains('active')) {
         dropdownManager.show(2147483647, 48, userMenu);
         e.stopPropagation();
@@ -1341,7 +1345,6 @@
   }
 
   win.onload = function (e) {
-    win.app = {};
     modal = getModalObj();
     dropdownManager = getDropdownManager();
 

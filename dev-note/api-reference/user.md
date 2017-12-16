@@ -49,6 +49,8 @@ This API responds with a corresponding `user` object on success.
 ### Description
 
 Updates information of the current user identified by a token.
+Password will be changed only if both `oldAuth` and `newAuth` parameters are
+provided and valid.
 
 This API **REQUIRES** a user token.
 
@@ -59,7 +61,8 @@ Content-type: `application/x-www-form-urlencoded`
 | Name     | Type   | Description               | Required? |
 |----------|--------|---------------------------|-----------|
 | fullName | string | The new full name         | No        |
-| password | string | The new password          | No        |
+| oldAuth  | string | The old password          | No        |
+| newAuth  | string | The new password          | No        |
 
 ### Response
 

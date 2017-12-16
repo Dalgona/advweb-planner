@@ -53,7 +53,11 @@ router.post('/', (req, res, next) => {
  */
 router.put('/', ejwt({ secret: config.jwtSecret }), (req, res, next) => {
   apiUser
-  .update(req.user, req.body.fullName, req.body.auth)
+  .update(req.user, {
+    fullName: req.body.fullName,
+    oldAuth: req.body.oldAuth,
+    newAuth: req.body.newAuth
+  })
   .then(u => sendJSON(res, 200, apiUser.toJSON(u)))
   .catch(sendError(res));
 });

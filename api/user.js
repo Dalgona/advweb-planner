@@ -62,18 +62,26 @@ const check = (token) => new Promise((resolve, reject) => {
 /*
  * Tries to update a user's information.
  */
-const update = (token, fullName, auth) => new Promise((resolve, reject) => {
+const update = (token, args) => new Promise((resolve, reject) => {
   check(token)
   .then(u => {
-    const newName = (fullName || '').trim();
-    const newAuth = auth || '';
+    const newName = (args.fullName || '').trim();
+    const oldAuth = args.oldAuth || '';
+    const newAuth = args.newAuth || '';
+    let change = false;
+    if (oldAuth && newAuth && u.auth != _hashed(oldAuth)) {
+      reject({ status: 403, code: error.code.E_PWMISMATCH });
+      return;
+    }
     if (newName) {
       u.fullName = newName;
+      change = true;
     }
-    if (newAuth) {
+    if (oldAuth && newAuth) {
       u.auth = _hashed(newAuth);
+      change = true;
     }
-    if (newName || newAuth) {
+    if (change) {
       u.modifiedAt = new Date();
     }
     u.save().then(u2 => resolve(u2)).catch(failWithDBError(reject));

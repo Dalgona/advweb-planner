@@ -82,7 +82,7 @@
     // PUT /user
     /**
      * Update information of the current user.
-     * @param {{fullName: string, auth: string}} args
+     * @param {{fullName: string, oldAuth: string, newAuth: string}} args
      * @param {(status: number, user: object) => void} onComplete
      * @param {(status: number, reason: object) => void} onError
      */

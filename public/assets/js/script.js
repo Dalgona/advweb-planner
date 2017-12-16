@@ -1478,14 +1478,14 @@
     }
   }
 
-  win.onload = function (e) {
+  win.PlannerClient = Client;
+
+  win.addEventListener('load', function (e) {
     modal = getModalObj();
     dropdownManager = getDropdownManager();
-
-    var client = new Client('http://localhost:3000/api');
 
     document.body.onclick = function (e) {
       dropdownManager.closeAll();
     };
-  };
+  }, false);
 })(window);

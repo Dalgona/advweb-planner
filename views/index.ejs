@@ -4,6 +4,11 @@
     <title><%= title %></title>
     <script src="/assets/js/planner-client.js"></script>
     <script src="/assets/js/script.js"></script>
+    <script>
+      window.addEventListener('load', function (e) {
+        new PlannerClient('http://localhost:3000/api');
+      }, false);
+    </script>
     <link rel="stylesheet" href="/assets/css/layout.css">
     <link rel="stylesheet" href="/assets/css/ui.css">
   </head>
